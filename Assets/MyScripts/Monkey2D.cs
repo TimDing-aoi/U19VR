@@ -67,10 +67,10 @@ public class Monkey2D : MonoBehaviour
     public AudioClip loseSound;
 
     //Per trial detailed settings
-    readonly public List<float> SMspeeds = new List<float>();
+    readonly public List<float> YawSpeeds = new List<float>();
     readonly public List<float> SMtrials = new List<float>();
-    readonly List<float> CIvelocities = new List<float>();
-    readonly List<float> CIratios = new List<float>();
+    readonly List<float> FFVelocities = new List<float>();
+    readonly List<float> FFVRatios = new List<float>();
     readonly List<Tuple<float, float, float, float, float>> CItrialsetup = new List<Tuple<float, float, float, float, float>>();
     //FFv, SMspeed, is self-motion trial, is always on trial, is 2-obs trial
     [HideInInspector] public bool selfmotiontrial;
@@ -104,7 +104,6 @@ public class Monkey2D : MonoBehaviour
         begin = 0,
         trial = 1,
         check = 2,
-        //question = 3,
         juice = 3,
         ITI = 4,
         none = 9
@@ -283,37 +282,37 @@ public class Monkey2D : MonoBehaviour
         maxJuiceTime = PlayerPrefs.GetFloat("Max Juice Time");
 
         //FF velocities
-        CIvelocities.Add(PlayerPrefs.GetFloat("V1"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V2"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V3"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V4"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V5"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V6"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V7"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V8"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V9"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V10"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V11"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V1"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V2"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V3"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V4"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V5"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V6"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V7"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V8"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V9"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V10"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V11"));
 
         //Ratio of the FF velocity
-        CIratios.Add(PlayerPrefs.GetFloat("VR1"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR2"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR3"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR4"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR5"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR6"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR7"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR8"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR9"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR10"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR11"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR1"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR2"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR3"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR4"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR5"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR6"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR7"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR8"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR9"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR10"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR11"));
 
         //Self motion speeds
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed1"));
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed2"));
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed3"));
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed4"));
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed5"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed1"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed2"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed3"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed4"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed5"));
 
         //Number of trials per SM speed
         SMtrials.Add(PlayerPrefs.GetFloat("NtrialsSM1"));
@@ -330,11 +329,11 @@ public class Monkey2D : MonoBehaviour
             for (int speeds = 0; speeds < 5; speeds++)
             {
                 int conditioncount;
-                conditioncount = (int)(SMtrials[speeds] * CIratios[velocitiescondition]);
+                conditioncount = (int)(SMtrials[speeds] * FFVRatios[velocitiescondition]);
                 while (conditioncount > 0)
                 {
-                    float conditionvelocity = CIvelocities[velocitiescondition];
-                    float conditionspeed = SMspeeds[speeds];
+                    float conditionvelocity = FFVelocities[velocitiescondition];
+                    float conditionspeed = YawSpeeds[speeds];
                     Tuple<float, float, float, float, float> New_Tuple;
                     //Deciding always on or 2-obs randomly
                     if (conditionspeed != 0)

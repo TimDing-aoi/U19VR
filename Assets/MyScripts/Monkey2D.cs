@@ -12,7 +12,7 @@
 /// </summary>                                                                          ///
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-
+//edit
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -67,11 +67,11 @@ public class Monkey2D : MonoBehaviour
     public AudioClip loseSound;
 
     //Per trial detailed settings
-    readonly public List<float> SMspeeds = new List<float>();
+    readonly public List<float> YawSpeeds = new List<float>();
     readonly public List<float> SMtrials = new List<float>();
-    readonly List<float> CIvelocities = new List<float>();
-    readonly List<float> CIratios = new List<float>();
-    readonly List<Tuple<float, float, float, float, float>> CItrialsetup = new List<Tuple<float, float, float, float, float>>();
+    readonly List<float> FFVelocities = new List<float>();
+    readonly List<float> FFVRatios = new List<float>();
+    readonly List<Tuple<float, float, float, float, float>> AllTrials = new List<Tuple<float, float, float, float, float>>();
     //FFv, SMspeed, is self-motion trial, is always on trial, is 2-obs trial
     [HideInInspector] public bool selfmotiontrial;
     [HideInInspector] public bool AlwaysOntrial;
@@ -97,6 +97,7 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public float juiceTime;
     private float minJuiceTime;
     private float maxJuiceTime;
+    float start_wait_time = 0.3f;
 
     //Current phase of the game
     public enum Phases
@@ -104,7 +105,6 @@ public class Monkey2D : MonoBehaviour
         begin = 0,
         trial = 1,
         check = 2,
-        //question = 3,
         juice = 3,
         ITI = 4,
         none = 9
@@ -114,7 +114,6 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public Phases phase;
     [HideInInspector] public Phases currPhase;
     private bool isBegin = false;
-    private bool isTrial = false;
     private bool isCheck = false;
     private bool isEnd = false;
     public bool isIntertrail = false;
@@ -263,11 +262,7 @@ public class Monkey2D : MonoBehaviour
         Rcam.projectionMatrix = rm;
         List<XRDisplaySubsystem> displaySubsystems = new List<XRDisplaySubsystem>();
         SubsystemManager.GetInstances<XRDisplaySubsystem>(displaySubsystems);
-        //print(XRSettings.loadedDeviceName);
-        if (!XRSettings.enabled)
-        {
-            XRSettings.enabled = true;
-        }
+        XRSettings.enabled = true;
 
         SharedMonkey = this;
 
@@ -283,37 +278,37 @@ public class Monkey2D : MonoBehaviour
         maxJuiceTime = PlayerPrefs.GetFloat("Max Juice Time");
 
         //FF velocities
-        CIvelocities.Add(PlayerPrefs.GetFloat("V1"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V2"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V3"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V4"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V5"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V6"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V7"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V8"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V9"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V10"));
-        CIvelocities.Add(PlayerPrefs.GetFloat("V11"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V1"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V2"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V3"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V4"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V5"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V6"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V7"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V8"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V9"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V10"));
+        FFVelocities.Add(PlayerPrefs.GetFloat("V11"));
 
         //Ratio of the FF velocity
-        CIratios.Add(PlayerPrefs.GetFloat("VR1"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR2"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR3"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR4"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR5"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR6"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR7"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR8"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR9"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR10"));
-        CIratios.Add(PlayerPrefs.GetFloat("VR11"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR1"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR2"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR3"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR4"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR5"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR6"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR7"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR8"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR9"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR10"));
+        FFVRatios.Add(PlayerPrefs.GetFloat("VR11"));
 
         //Self motion speeds
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed1"));
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed2"));
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed3"));
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed4"));
-        SMspeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed5"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed1"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed2"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed3"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed4"));
+        YawSpeeds.Add(PlayerPrefs.GetFloat("SelfMotionSpeed5"));
 
         //Number of trials per SM speed
         SMtrials.Add(PlayerPrefs.GetFloat("NtrialsSM1"));
@@ -329,47 +324,46 @@ public class Monkey2D : MonoBehaviour
             //5 SM speeds
             for (int speeds = 0; speeds < 5; speeds++)
             {
-                int conditioncount;
-                conditioncount = (int)(SMtrials[speeds] * CIratios[velocitiescondition]);
+                int conditioncount = (int)(SMtrials[speeds] * FFVRatios[velocitiescondition]);
                 while (conditioncount > 0)
                 {
-                    float conditionvelocity = CIvelocities[velocitiescondition];
-                    float conditionspeed = SMspeeds[speeds];
-                    Tuple<float, float, float, float, float> New_Tuple;
+                    float condition_velocity = FFVelocities[velocitiescondition];
+                    float condition_speed = YawSpeeds[speeds];
+                    Tuple<float, float, float, float, float> TrialAttributes;
                     //Deciding always on or 2-obs randomly
-                    if (conditionspeed != 0)
+                    if (condition_speed != 0)
                     {
-                        bool alwaysontog = rand.NextDouble() <= ratioAlwaysOn;
-                        bool obs2tog = false;
-                        if (!alwaysontog)
+                        bool always_on_trial = rand.NextDouble() <= ratioAlwaysOn;
+                        bool two_obs_trial = false;
+                        if (!always_on_trial)
                         {
-                            obs2tog = rand.NextDouble() <= ratio2Obs;
+                            two_obs_trial = rand.NextDouble() <= ratio2Obs;
                         }
                         float alwaysontr = 0;
                         float obs2tr = 0;
-                        if (alwaysontog) alwaysontr = 1f;
-                        if (obs2tog) obs2tr = 1f;
-                        New_Tuple = new Tuple<float, float, float, float, float>(conditionvelocity, conditionspeed, 1f, alwaysontr, obs2tr);
+                        if (always_on_trial) alwaysontr = 1f;
+                        if (two_obs_trial) obs2tr = 1f;
+                        TrialAttributes = new Tuple<float, float, float, float, float>(condition_velocity, condition_speed, 1f, alwaysontr, obs2tr);
                     }
                     else
                     {
-                        bool alwaysontog = rand.NextDouble() <= ratioAlwaysOn;
-                        bool obs2tog = rand.NextDouble() <= ratio2Obs;
+                        bool always_on_trial = rand.NextDouble() <= ratioAlwaysOn;
+                        bool two_obs_trial = rand.NextDouble() <= ratio2Obs;
                         float alwaysontr = 0;
                         float obs2tr = 0;
-                        if (alwaysontog) alwaysontr = 1f;
-                        if (obs2tog) obs2tr = 1f;
-                        New_Tuple = new Tuple<float, float, float, float, float>(conditionvelocity, conditionspeed, 0f, alwaysontr, obs2tr);
+                        if (always_on_trial) alwaysontr = 1f;
+                        if (two_obs_trial) obs2tr = 1f;
+                        TrialAttributes = new Tuple<float, float, float, float, float>(condition_velocity, condition_speed, 0f, alwaysontr, obs2tr);
                     }
-                    CItrialsetup.Add(New_Tuple);
+                    AllTrials.Add(TrialAttributes);
                     conditioncount--;
                 }
             }
         }
-        Shuffle(CItrialsetup);
-        string setupcheck = "Causal Inference Task: total number of " + CItrialsetup.Count.ToString() + " trials";
+        Shuffle(AllTrials);
+        string setupcheck = "Causal Inference Task: total number of " + AllTrials.Count.ToString() + " trials";
         print(setupcheck);
-        ntrials = CItrialsetup.Count;
+        ntrials = AllTrials.Count;
 
         BlueCircle.SetActive(true);
         drawLine(30, 200);
@@ -411,10 +405,11 @@ public class Monkey2D : MonoBehaviour
     void Update()
     {
         //Moves the optic flow with the player
-        particle_System.transform.position = player.transform.position - (Vector3.up * (p_height - 0.0002f));
+        float EPSILON_OFFSET = 0.0002f;
+        particle_System.transform.position = player.transform.position - (Vector3.up * (p_height - EPSILON_OFFSET));
 
         //Task switch based on phase
-        if (playing && Time.realtimeSinceStartup - programT0 > 0.3f)
+        if (playing && Time.realtimeSinceStartup - programT0 > start_wait_time)
         {
             switch (phase)
             {
@@ -442,19 +437,10 @@ public class Monkey2D : MonoBehaviour
             //Action (Flag = 4)
             if (GFFPhaseFlag == 4)
             {
-                if (velocity > 0)
-                {
-                    sign_v = 1;
-                }
-                else if (velocity < 0)
-                {
-                    sign_v = -1;
-                }
-                else
-                {
-                    sign_v = 0;
-                }
-                GFFTrueRadians = FF0_acc * Mathf.Deg2Rad + velocity * Mathf.Deg2Rad * (Time.time - t0_acc) + sign_v * dFF_acc * Mathf.Deg2Rad * (((Time.time - t1_acc) / t_max) * ((Time.time - t1_acc) / t_max));
+                sign_v = Math.Sign(velocity);
+                GFFTrueRadians = FF0_acc * Mathf.Deg2Rad;
+                GFFTrueRadians += velocity * Mathf.Deg2Rad * (Time.time - t0_acc);
+                GFFTrueRadians += sign_v * dFF_acc * Mathf.Deg2Rad * (((Time.time - t1_acc) / t_max) * ((Time.time - t1_acc) / t_max));
                 //Add noise if desired
                 //velocity_Noised = GFFTrueRadians + (float)randStdNormal * Mathf.Deg2Rad;
                 float x = FFMoveRadius * Mathf.Cos(GFFTrueRadians);
@@ -584,14 +570,14 @@ public class Monkey2D : MonoBehaviour
         heading.Add(player.transform.rotation.ToString("F5").Trim(toTrim).Replace(" ", ""));
 
         //Drawing the trial condition from pregenerated trials
-        var trialpair = CItrialsetup[trialNum];
+        var trial_info = AllTrials[trialNum];
         trialNum++;
         n.Add(trialNum);
-        velocity = trialpair.Item1;
-        SelfMotionSpeed = trialpair.Item2;
-        selfmotiontrial = trialpair.Item3 == 1;
-        AlwaysOntrial = trialpair.Item4 == 1;
-        DoubleObservtrial = trialpair.Item5 == 1;
+        velocity = trial_info.Item1;
+        SelfMotionSpeed = trial_info.Item2;
+        selfmotiontrial = trial_info.Item3 == 1;
+        AlwaysOntrial = trial_info.Item4 == 1;
+        DoubleObservtrial = trial_info.Item5 == 1;
         string trialset = "Trial velocity =" + velocity.ToString() + "\n" + "Trial SMspeed:" + SelfMotionSpeed.ToString() + " Selfmotion:" + selfmotiontrial.ToString() + " Always On:"
             + AlwaysOntrial.ToString() + "Double Obsv:" + DoubleObservtrial.ToString();
         print(trialset);
@@ -621,8 +607,6 @@ public class Monkey2D : MonoBehaviour
     /// </summary>
     async Task Trial()
     {
-        isTrial = true;
-
         //Debug.Log("Trial Phase Start.");
 
         source = new CancellationTokenSource();
@@ -650,10 +634,10 @@ public class Monkey2D : MonoBehaviour
         HabituationStart.Add(Time.realtimeSinceStartup);
         endFrame = (int)(Time.frameCount + frameRate * habituation_1);
         await new WaitUntil(() => Time.frameCount == endFrame);
-        for (int prep = 0; prep < frameRate * habituation_2; prep++)
+        for (int Habituation_Frame = 0; Habituation_Frame < frameRate * habituation_2; Habituation_Frame++)
         {
             await new WaitForSecondsRealtime(1f / frameRate);
-            float ring_color = (float)(((frameRate * habituation_2) - prep) /
+            float ring_color = (float)(((frameRate * habituation_2) - Habituation_Frame) /
                 (frameRate * habituation_2));
             lr.materials[0].SetColor("_Color", new Color(0.5529411f, 0.5607843f, 1f, ring_color));
         }
@@ -680,8 +664,9 @@ public class Monkey2D : MonoBehaviour
         float FF_circX = 999;//FF pos in deg
 
         float player_circX = SharedJoystick.circX * Mathf.Rad2Deg;//player pos in deg
-        double dist_decider = randNoise.NextDouble();
-        if (dist_decider > 0.5)
+        bool use_first_dist = randNoise.NextDouble() > 0.5;
+        //Choose one of the two given distributions to determine where to generate the FF
+        if (use_first_dist)
         {
             while (Mathf.Abs(FF_circX - player_circX) > 15)
             {
@@ -750,8 +735,6 @@ public class Monkey2D : MonoBehaviour
         velocity = 0.0f;
         phase = Phases.check;
         currPhase = Phases.check;
-        isTrial = false;
-        // Debug.Log("Trial Phase End.");
     }
 
     /// <summary>
@@ -866,12 +849,10 @@ public class Monkey2D : MonoBehaviour
 
         isEnd = true;
 
-        //print(wait);
         isIntertrail = true;
         await new WaitForSeconds(wait);
 
         phase = Phases.begin;
-        //Debug.Log("Check Phase End.");
     }
 
     public async void SendMarker(string mark, float time)
@@ -1047,7 +1028,7 @@ public class Monkey2D : MonoBehaviour
         int trial_count = 0;
         string metaPath = path + "/CIMetaData_" + PlayerPrefs.GetInt("Optic Flow Seed").ToString() + ".txt";
         File.AppendAllText(metaPath, "TrialNum,TrialFFV,TrialSelfMotionSpeed,Selfmotion,ObservCondition,FFmoving\n");
-        foreach (var tuple in CItrialsetup)
+        foreach (var tuple in AllTrials)
         {
             trial_count++;
             string trialtext = string.Format("{0},{1},{2},{3},{4},{5} \n", trial_count, tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5);

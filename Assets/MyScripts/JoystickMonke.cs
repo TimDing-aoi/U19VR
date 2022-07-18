@@ -68,14 +68,7 @@ public class JoystickMonke : MonoBehaviour
         }
         else if (moveX == 0)
         {
-            if (prevX < 0.0f)
-            {
-                moveX -= 1.0f;
-            }
-            else if (prevX > 0.0f)
-            {
-                moveX += 1.0f;
-            }
+            moveX += Math.Sign(prevX);
         }
         prevX = moveX;
 
@@ -89,14 +82,7 @@ public class JoystickMonke : MonoBehaviour
         }
         else if (moveY == 0)
         {
-            if (prevY < 0.0f)
-            {
-                moveY -= 1.0f;
-            }
-            else if (prevY > 0.0f)
-            {
-                moveY += 1.0f;
-            }
+            moveY += Math.Sign(prevY);
         }
         prevY = moveY;
 

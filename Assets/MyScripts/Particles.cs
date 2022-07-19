@@ -23,7 +23,7 @@ public class Particles : MonoBehaviour
         seed = (uint)UnityEngine.Random.Range(1, 10000);
         PlayerPrefs.SetInt("Optic Flow Seed", (int)seed);
         lifeSpan = PlayerPrefs.GetFloat("lifeSpan");
-        dist = PlayerPrefs.GetFloat("Draw Distance");
+        dist = PlayerPrefs.GetFloat("drawDistance");
         density = PlayerPrefs.GetFloat("Density");
         t_height = PlayerPrefs.GetFloat("tHeight");
         particleSystem = GetComponent<ParticleSystem>();

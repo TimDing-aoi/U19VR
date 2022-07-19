@@ -839,7 +839,7 @@ public class Monkey2D : MonoBehaviour
 
         float wait = PlayerPrefs.GetFloat("ITIduration");
         currPhase = Phases.ITI;
-        await new WaitForSeconds(5);
+        await new WaitForSeconds(wait);
         interWait.Add(wait);
 
         distances.Clear();

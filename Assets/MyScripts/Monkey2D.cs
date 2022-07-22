@@ -55,6 +55,8 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public float lifeSpan;
     [Tooltip("Ratio of trials that will have fireflies always on")]
     [HideInInspector] public float ratioAlwaysOn;
+    [Tooltip("Ratio of trials that will have fireflies always on")]
+    [HideInInspector] public float Ratio2Obs;
     [Tooltip("Ratio of trials that will have 2 observations")]
     [HideInInspector] public float ratio2Obs;
     [Tooltip("Distance from origin to firefly")]
@@ -97,6 +99,7 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public float juiceTime;
     private float minJuiceTime;
     private float maxJuiceTime;
+    private float RewardWindow;
     float start_wait_time = 0.3f;
 
     //Current phase of the game
@@ -274,8 +277,14 @@ public class Monkey2D : MonoBehaviour
         fireflySize = PlayerPrefs.GetFloat("Size");
         firefly.transform.localScale = new Vector3(fireflySize, fireflySize, 1);
         ratioAlwaysOn = PlayerPrefs.GetFloat("Ratio");
+        ratio2Obs = PlayerPrefs.GetFloat("Ratio2Obs");
         minJuiceTime = PlayerPrefs.GetFloat("Min Juice Time");
         maxJuiceTime = PlayerPrefs.GetFloat("Max Juice Time");
+        RewardWindow = PlayerPrefs.GetFloat("RewardWindow");
+        float FF_radius_ratio = fireflySize / (4 * FFMoveRadius * Mathf.PI);
+        float FF_radius_deg = FF_radius_ratio * 360;
+        RewardWindow += FF_radius_deg;
+        dFF_acc = PlayerPrefs.GetFloat("FFacceleration");
 
         //FF velocities
         FFVelocities.Add(PlayerPrefs.GetFloat("V1"));
@@ -477,7 +486,7 @@ public class Monkey2D : MonoBehaviour
     public void FixedUpdate()
     {
         var keyboard = Keyboard.current;
-        if ((keyboard.enterKey.isPressed || trialNum > ntrials) && playing)
+        if ((keyboard.enterKey.isPressed || trialNum >= ntrials) && playing)
         {
             playing = false;
 
@@ -767,7 +776,7 @@ public class Monkey2D : MonoBehaviour
         audioSource.clip = loseSound;
 
         float reward_radius = FFMoveRadius;
-        float player_degree = 0;
+        float player_degree;
         if (pPos.x > 30)
         {
             player_degree = Mathf.Acos(30 / reward_radius) * Mathf.Rad2Deg;
@@ -778,10 +787,11 @@ public class Monkey2D : MonoBehaviour
         }
         float FF_Degree = Mathf.Acos(firefly.transform.position.x / reward_radius) * Mathf.Rad2Deg;
         float degree_score = Mathf.Abs(player_degree - FF_Degree);
-        if (degree_score <= 25)
+        if (degree_score <= RewardWindow)
         {
             rewarded = true;
         }
+        print(string.Format("Window: {0}", RewardWindow));
         print(string.Format("Scored: {0}", degree_score));
         ffPosStr = string.Format("{0},{1},{2}", firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x);
         distances.Add(degree_score);
@@ -789,27 +799,8 @@ public class Monkey2D : MonoBehaviour
         if (rewarded)
         {
             audioSource.clip = winSound;
-            juiceTime = minJuiceTime + (maxJuiceTime - minJuiceTime) * (degree_score / 25);
-            if (degree_score <= 5)
-            {
-                CIScores.Add(5f);
-            }
-            else if (degree_score <= 10)
-            {
-                CIScores.Add(4f);
-            }
-            else if (degree_score <= 15)
-            {
-                CIScores.Add(3f);
-            }
-            else if (degree_score <= 20)
-            {
-                CIScores.Add(2f);
-            }
-            else
-            {
-                CIScores.Add(1f);
-            }
+            juiceTime = Mathf.Lerp(maxJuiceTime, minJuiceTime, Mathf.InverseLerp(0.0f, RewardWindow, degree_score));
+            CIScores.Add(degree_score);
             juiceDuration.Add(juiceTime);
             rewardTime.Add(Time.realtimeSinceStartup);
             audioSource.Play();
@@ -984,6 +975,7 @@ public class Monkey2D : MonoBehaviour
             PlayerPrefs.SetInt("Total Trials", n.Count);
 
             SaveConfigs();
+            PlayerPrefs.SetInt("Run Number", PlayerPrefs.GetInt("Run Number") + 1);
         }
         catch (Exception e)
         {
@@ -1094,14 +1086,6 @@ public class Monkey2D : MonoBehaviour
         xmlWriter.WriteString(PlayerPrefs.GetFloat("Size").ToString());
         xmlWriter.WriteEndElement();
 
-        xmlWriter.WriteStartElement("MinJuiceTime");
-        xmlWriter.WriteString(PlayerPrefs.GetFloat("Min Juice Time").ToString());
-        xmlWriter.WriteEndElement();
-
-        xmlWriter.WriteStartElement("MaxJuiceTime");
-        xmlWriter.WriteString(PlayerPrefs.GetFloat("Max Juice Time").ToString());
-        xmlWriter.WriteEndElement();
-
         xmlWriter.WriteStartElement("Ratio");
         xmlWriter.WriteString(PlayerPrefs.GetFloat("Ratio").ToString());
         xmlWriter.WriteEndElement();
@@ -1142,6 +1126,14 @@ public class Monkey2D : MonoBehaviour
         xmlWriter.WriteString(PlayerPrefs.GetFloat("ITIduration").ToString());
         xmlWriter.WriteEndElement();
 
+        xmlWriter.WriteStartElement("FFacceleration");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("FFacceleration").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("Ratio2Obs");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("Ratio2Obs").ToString());
+        xmlWriter.WriteEndElement();
+
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteStartElement("Setting");
@@ -1174,6 +1166,27 @@ public class Monkey2D : MonoBehaviour
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteStartElement("Setting");
+        xmlWriter.WriteAttributeString("Type", "Training Reward Settings");
+
+        xmlWriter.WriteStartElement("MinJuiceTime");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("Min Juice Time").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("MaxJuiceTime");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("Max Juice Time").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("RewardWindow");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("RewardWindow").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("FFOpacity");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("FFOpacity").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("Setting");
         xmlWriter.WriteAttributeString("Type", "Data Collection Settings");
 
         xmlWriter.WriteStartElement("Path");
@@ -1182,14 +1195,6 @@ public class Monkey2D : MonoBehaviour
 
         xmlWriter.WriteStartElement("Name");
         xmlWriter.WriteString(PlayerPrefs.GetString("Name"));
-        xmlWriter.WriteEndElement();
-
-        xmlWriter.WriteStartElement("Date");
-        xmlWriter.WriteString(PlayerPrefs.GetString("Date"));
-        xmlWriter.WriteEndElement();
-
-        xmlWriter.WriteStartElement("RunNumber");
-        xmlWriter.WriteString((PlayerPrefs.GetInt("Run Number") + 1).ToString());
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteEndElement();

@@ -375,7 +375,7 @@ public class Monkey2D : MonoBehaviour
         ntrials = AllTrials.Count;
 
         BlueCircle.SetActive(true);
-        drawLine(30, 200);
+        drawLine(FFMoveRadius, 200);
 
         path = PlayerPrefs.GetString("Path");
 
@@ -722,17 +722,18 @@ public class Monkey2D : MonoBehaviour
         GFFPhaseFlag = 4;
         t1_acc = Time.time;//Action phase begin time
         ActionStart.Add(Time.realtimeSinceStartup);
-        await new WaitForSeconds(0.75f);
+        float ActionTime = FFMoveRadius / PlayerPrefs.GetFloat("LinearSpeed");
+        await new WaitForSeconds(ActionTime/2);
         if (DoubleObservtrial)
         {
             firefly.SetActive(true);
         }
-        await new WaitForSeconds(0.3f);
+        await new WaitForSeconds(observation);
         if (!AlwaysOntrial)
         {
             firefly.SetActive(false);
         }
-        await new WaitForSeconds(0.45f);
+        await new WaitForSeconds(ActionTime/2 - observation);
 
         if (AlwaysOntrial)
         {
@@ -777,9 +778,9 @@ public class Monkey2D : MonoBehaviour
 
         float reward_radius = FFMoveRadius;
         float player_degree;
-        if (pPos.x > 30)
+        if (pPos.x > FFMoveRadius)
         {
-            player_degree = Mathf.Acos(30 / reward_radius) * Mathf.Rad2Deg;
+            player_degree = Mathf.Acos(FFMoveRadius / reward_radius) * Mathf.Rad2Deg;
         }
         else
         {

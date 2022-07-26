@@ -193,10 +193,7 @@ public class Monkey2D : MonoBehaviour
     public float habituation_1 = 0.1f;
     public float habituation_2 = 0.2f;
     public float habituation_3 = 0.05f;
-    public float observation = 0.3f;
-    public float feedback = 0.5f;
-    public float preparation_total = 0.3f;
-    public float habituation_total = 0.35f;
+    public float observation;
 
     // Rewarded?
     bool rewarded;
@@ -285,6 +282,7 @@ public class Monkey2D : MonoBehaviour
         float FF_radius_deg = FF_radius_ratio * 360;
         RewardWindow += FF_radius_deg;
         dFF_acc = PlayerPrefs.GetFloat("FFacceleration");
+        observation = PlayerPrefs.GetFloat("FFOnTime");
 
         //FF velocities
         FFVelocities.Add(PlayerPrefs.GetFloat("V1"));
@@ -1133,6 +1131,10 @@ public class Monkey2D : MonoBehaviour
 
         xmlWriter.WriteStartElement("Ratio2Obs");
         xmlWriter.WriteString(PlayerPrefs.GetFloat("Ratio2Obs").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("FFOnTime");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("FFOnTime").ToString());
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteEndElement();

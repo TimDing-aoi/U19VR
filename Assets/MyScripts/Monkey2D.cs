@@ -61,6 +61,7 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public float ratio2Obs;
     [Tooltip("Distance from origin to firefly")]
     [HideInInspector] public float FFMoveRadius;
+    private float FFOpacity;
 
     //Sounds to be played
     public AudioSource audioSource;
@@ -283,6 +284,7 @@ public class Monkey2D : MonoBehaviour
         RewardWindow += FF_radius_deg;
         dFF_acc = PlayerPrefs.GetFloat("FFacceleration");
         observation = PlayerPrefs.GetFloat("FFOnTime");
+        FFOpacity = PlayerPrefs.GetFloat("FFOpacity");
 
         //FF velocities
         FFVelocities.Add(PlayerPrefs.GetFloat("V1"));
@@ -675,7 +677,7 @@ public class Monkey2D : MonoBehaviour
         //Choose one of the two given distributions to determine where to generate the FF
         if (use_first_dist)
         {
-            while (Mathf.Abs(FF_circX - player_circX) > 15)
+            while (Mathf.Abs(FF_circX - player_circX) > 22.5)
             {
                 double u1 = 1.0 - randNoise.NextDouble(); //uniform(0,1] random doubles
                 double u2 = 1.0 - randNoise.NextDouble();
@@ -685,7 +687,7 @@ public class Monkey2D : MonoBehaviour
         }
         else
         {
-            while (Mathf.Abs(FF_circX - player_circX) > 15)
+            while (Mathf.Abs(FF_circX - player_circX) > 22.5)
             {
                 double u1 = 1.0 - randNoise.NextDouble(); //uniform(0,1] random doubles
                 double u2 = 1.0 - randNoise.NextDouble();
@@ -706,9 +708,13 @@ public class Monkey2D : MonoBehaviour
 
         endFrame = (int)(Time.frameCount + frameRate * observation);
         await new WaitUntil(() => Time.frameCount == endFrame);
-        if (!AlwaysOntrial)
+        if (!AlwaysOntrial || FFOpacity == 0)
         {
             firefly.SetActive(false);
+        }
+        else
+        {
+
         }
 
         //ramp down
@@ -844,7 +850,6 @@ public class Monkey2D : MonoBehaviour
         switch (mark)
         {
             case "j":
-                rewardTime.Add(Time.realtimeSinceStartup - programT0);
                 break;
             case "s":
                 beginTime.Add(Time.realtimeSinceStartup - programT0);

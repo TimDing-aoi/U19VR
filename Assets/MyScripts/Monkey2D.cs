@@ -864,11 +864,7 @@ public class Monkey2D : MonoBehaviour
                 break;
         }
 
-        if(PlayerPrefs.GetFloat("calib") != 0)
-        {
-            juiceBox.Write(toSend);
-        }
-
+        juiceBox.Write(toSend);
         await new WaitForSeconds(time / 1000.0f);
     }
 

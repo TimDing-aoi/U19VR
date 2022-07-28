@@ -714,7 +714,8 @@ public class Monkey2D : MonoBehaviour
         }
         else
         {
-
+            SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
         }
 
         //ramp down

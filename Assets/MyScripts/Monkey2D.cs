@@ -774,18 +774,10 @@ public class Monkey2D : MonoBehaviour
         checkWait.Add(0.0f);
         audioSource.clip = loseSound;
 
-        float reward_radius = FFMoveRadius;
-        float player_degree;
-        if (pPos.x > FFMoveRadius)
-        {
-            player_degree = Mathf.Acos(FFMoveRadius / reward_radius) * Mathf.Rad2Deg;
-        }
-        else
-        {
-            player_degree = Mathf.Acos(pPos.x / reward_radius) * Mathf.Rad2Deg;
-        }
-        float FF_Degree = Mathf.Acos(firefly.transform.position.x / reward_radius) * Mathf.Rad2Deg;
-        float degree_score = Mathf.Abs(player_degree - FF_Degree);
+        float degree_score;
+        Vector3 player_vec = new Vector3(player.transform.position.x, 0, player.transform.position.z);
+        Vector3 FF_vec = new Vector3(firefly.transform.position.x, 0, firefly.transform.position.z);
+        degree_score = Vector3.Angle(player_vec, FF_vec);
         if (degree_score <= RewardWindow)
         {
             rewarded = true;

@@ -673,7 +673,8 @@ public class Monkey2D : MonoBehaviour
         float FF_circX = 999;//FF pos in deg
 
         float player_circX = SharedJoystick.circX * Mathf.Rad2Deg;//player pos in deg
-        bool use_first_dist = randNoise.NextDouble() > 0.5;
+        float RatioSD1 = PlayerPrefs.GetFloat("RatioSD1");
+        bool use_first_dist = randNoise.NextDouble() < RatioSD1;
         //Choose one of the two given distributions to determine where to generate the FF
         if (use_first_dist)
         {

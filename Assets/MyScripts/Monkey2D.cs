@@ -543,8 +543,8 @@ public class Monkey2D : MonoBehaviour
                    Time.frameCount,
                    velocity,
                    SelfMotionSpeed,
-                   SharedJoystick.moveX,
-                   SharedJoystick.moveY));
+                   SharedJoystick.rawX,
+                   SharedJoystick.rawY));
         }
     }
 

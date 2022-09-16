@@ -16,6 +16,8 @@ public class JoystickMonke : MonoBehaviour
     //Joystick inputs
     public float moveX;
     public float moveY;
+    public float rawX;
+    public float rawY;
 
     //Player Polar coordinates
     public float circX;//Player circular x (rotation) position in radians
@@ -86,6 +88,8 @@ public class JoystickMonke : MonoBehaviour
         }
         prevY = moveY;
 
+        rawX = moveY;
+        rawY = moveX;
         moveX = moveY;
         moveY = 1f;
 

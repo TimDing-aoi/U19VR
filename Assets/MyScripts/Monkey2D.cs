@@ -85,7 +85,7 @@ public class Monkey2D : MonoBehaviour
 
     //Acceleration Params
     private float FF0_acc;
-    private float t_max = 1.5f;//Total FF move time
+    private float t_max;
     private float t0_acc;
     private float t1_acc;
     private float sign_v;
@@ -285,6 +285,8 @@ public class Monkey2D : MonoBehaviour
         dFF_acc = PlayerPrefs.GetFloat("FFacceleration");
         observation = PlayerPrefs.GetFloat("FFOnTime");
         FFOpacity = PlayerPrefs.GetFloat("FFOpacity");
+        float LinSpeed = PlayerPrefs.GetFloat("LinearSpeed");
+        t_max = FFMoveRadius / LinSpeed; //Total FF move time
 
         //FF velocities
         FFVelocities.Add(PlayerPrefs.GetFloat("V1"));

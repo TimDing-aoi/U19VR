@@ -394,7 +394,7 @@ public class Monkey2D : MonoBehaviour
         if (PlayerPrefs.GetFloat("calib") == 0)
         {
             string firstLine = "TrialNum,TrialTime,BackendPhase,OnOff,PosX,PosY,PosZ,RotX,RotY,RotZ,RotW,CleanLinearVelocity,CleanAngularVelocity,FFX,FFY,FFZ,FFV/linear,GazeX,GazeY,GazeZ,GazeX0,GazeY0,GazeZ0,HitX,HitY,HitZ,ConvergeDist," +
-                "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY";
+                "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX";
             sb.Append(firstLine + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetString("Date") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
         }
     }
@@ -522,7 +522,7 @@ public class Monkey2D : MonoBehaviour
         {
             string transformedFFPos = new Vector3(firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x).ToString("F8").Trim(toTrim).Replace(" ", "");
             Vector3 fake_location = new Vector3(-999f, -999f, -999f);
-            sb.Append(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23}\n",
+            sb.Append(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24}\n",
                    trialNum,
                    Time.realtimeSinceStartup,
                    (int)currPhase,
@@ -546,7 +546,8 @@ public class Monkey2D : MonoBehaviour
                    velocity,
                    SelfMotionSpeed,
                    SharedJoystick.rawX,
-                   SharedJoystick.rawY));
+                   SharedJoystick.rawY,
+                   SharedJoystick.circX * Mathf.Rad2Deg));
         }
     }
 

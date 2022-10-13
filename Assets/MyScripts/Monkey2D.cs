@@ -707,20 +707,17 @@ public class Monkey2D : MonoBehaviour
         Vector3 position = new Vector3(x, y, z);
         FF0_acc = FF_circX;
         t0_acc = Time.time;//FF generation time
+        SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
         firefly.transform.position = position;
         GFFTrueRadians = FF_circX * Mathf.Deg2Rad;
+        FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
         firefly.SetActive(true);
         ObservationStart.Add(Time.realtimeSinceStartup);
 
         endFrame = (int)(Time.frameCount + frameRate * observation);
         await new WaitUntil(() => Time.frameCount == endFrame);
-        if (!AlwaysOntrial || FFOpacity == 0)
+        if (!AlwaysOntrial)
         {
-            firefly.SetActive(false);
-        }
-        else
-        {
-            SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
         }
 
@@ -737,12 +734,12 @@ public class Monkey2D : MonoBehaviour
         await new WaitForSeconds(ActionTime/2);
         if (DoubleObservtrial)
         {
-            firefly.SetActive(true);
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
         }
         await new WaitForSeconds(observation);
         if (!AlwaysOntrial)
         {
-            firefly.SetActive(false);
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
         }
         await new WaitForSeconds(ActionTime/2 - observation);
 

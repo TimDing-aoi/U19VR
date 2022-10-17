@@ -743,10 +743,7 @@ public class Monkey2D : MonoBehaviour
         }
         await new WaitForSeconds(ActionTime/2 - observation);
 
-        if (AlwaysOntrial)
-        {
-            firefly.SetActive(false);
-        }
+        firefly.SetActive(false);
 
         //Moving on to check/feedback
         source.Cancel();

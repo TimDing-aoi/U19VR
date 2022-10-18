@@ -100,8 +100,6 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public float juiceTime;
     private float minJuiceTime;
     private float maxJuiceTime;
-    private float ONminJuiceTime;
-    private float ONmaxJuiceTime;
     private float RewardWindow;
     float start_wait_time = 0.3f;
 
@@ -280,8 +278,6 @@ public class Monkey2D : MonoBehaviour
         ratio2Obs = PlayerPrefs.GetFloat("Ratio2Obs");
         minJuiceTime = PlayerPrefs.GetFloat("Min Juice Time");
         maxJuiceTime = PlayerPrefs.GetFloat("Max Juice Time");
-        ONminJuiceTime = PlayerPrefs.GetFloat("ONMinJuiceTime");
-        ONmaxJuiceTime = PlayerPrefs.GetFloat("ONMaxJuiceTime");
         RewardWindow = PlayerPrefs.GetFloat("RewardWindow");
         float FF_radius_ratio = fireflySize / (4 * FFMoveRadius * Mathf.PI);
         float FF_radius_deg = FF_radius_ratio * 360;
@@ -801,12 +797,7 @@ public class Monkey2D : MonoBehaviour
         if (rewarded)
         {
             audioSource.clip = winSound;
-            if(AlwaysOntrial){
-                juiceTime = Mathf.Lerp(ONmaxJuiceTime, ONminJuiceTime, Mathf.InverseLerp(0.0f, RewardWindow, degree_score));
-            }
-            else{
-                juiceTime = Mathf.Lerp(maxJuiceTime, minJuiceTime, Mathf.InverseLerp(0.0f, RewardWindow, degree_score));
-            }
+            juiceTime = Mathf.Lerp(maxJuiceTime, minJuiceTime, Mathf.InverseLerp(0.0f, RewardWindow, degree_score));
             CIScores.Add(degree_score);
             juiceDuration.Add(juiceTime);
             rewardTime.Add(Time.realtimeSinceStartup);

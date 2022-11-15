@@ -743,6 +743,14 @@ public class Monkey2D : MonoBehaviour
         t1_acc = Time.time;//Action phase begin time
         ActionStart.Add(Time.realtimeSinceStartup);
         float ActionTime = FFMoveRadius / PlayerPrefs.GetFloat("LinearSpeed");
+        float RandomizedBStart = (float)(ActionTime * (1 - actionB) * rand.NextDouble());
+        bool isRandomizedB = PlayerPrefs.GetInt("RandomizedB") == 1;
+        if (isRandomizedB)
+        {
+            actionA = RandomizedBStart;
+            actionC = RandomizedBStart + actionB;
+            actionD = 0;
+        }
         if(actionA != 0 && DoubleObservtrial)
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));

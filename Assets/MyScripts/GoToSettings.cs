@@ -46,6 +46,12 @@ public class GoToSettings : MonoBehaviour
             {
                 if (children.gameObject.CompareTag("Setting"))
                 {
+                    if (children.name == "RandomizedB")
+                    {
+                        bool field = PlayerPrefs.GetInt(children.name) == 1;
+                        children.GetComponent<UnityEngine.UI.Toggle>().isOn = field;
+                    }
+                    else
                     if (children.name == "Path" || children.name == "Name" || children.name == "Date")
                     {
                         TMP_InputField field = children.GetComponent<TMP_InputField>();
@@ -103,7 +109,11 @@ public class GoToSettings : MonoBehaviour
     {
         try
         {
-            if (obj.name == "Name" || obj.name == "Date")
+            if (obj.name == "RandomizedB")
+            {
+                PlayerPrefs.SetInt(obj.name, obj.GetComponent<UnityEngine.UI.Toggle>().isOn ? 1 : 0);
+            }
+            else if (obj.name == "Name" || obj.name == "Date")
             {
                 if (input.text == null)
                 {

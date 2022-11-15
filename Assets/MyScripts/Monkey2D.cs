@@ -195,6 +195,10 @@ public class Monkey2D : MonoBehaviour
     public float habituation_2 = 0.2f;
     public float habituation_3 = 0.05f;
     public float observation;
+    public float actionA;
+    public float actionB;
+    public float actionC;
+    public float actionD;
 
     // Rewarded?
     bool rewarded;
@@ -327,7 +331,15 @@ public class Monkey2D : MonoBehaviour
         SMtrials.Add(PlayerPrefs.GetFloat("NtrialsSM3"));
         SMtrials.Add(PlayerPrefs.GetFloat("NtrialsSM4"));
         SMtrials.Add(PlayerPrefs.GetFloat("NtrialsSM5"));
-        
+
+        //Action Timeline
+        float ActionTime = FFMoveRadius / PlayerPrefs.GetFloat("LinearSpeed");
+        float ActionTotal = PlayerPrefs.GetFloat("Aperiod") + PlayerPrefs.GetFloat("Bperiod") + PlayerPrefs.GetFloat("Cperiod") + PlayerPrefs.GetFloat("Dperiod");
+        actionA = ActionTime * (PlayerPrefs.GetFloat("Aperiod") / ActionTotal);
+        actionB = ActionTime * (PlayerPrefs.GetFloat("Bperiod") / ActionTotal);
+        actionC = ActionTime * (PlayerPrefs.GetFloat("Cperiod") / ActionTotal);
+        actionD = ActionTime * (PlayerPrefs.GetFloat("Dperiod") / ActionTotal);
+
         //Pre-generating trial conditions
         //11 FF velocities
         for (int velocitiescondition = 0; velocitiescondition < 11; velocitiescondition++)
@@ -731,17 +743,34 @@ public class Monkey2D : MonoBehaviour
         t1_acc = Time.time;//Action phase begin time
         ActionStart.Add(Time.realtimeSinceStartup);
         float ActionTime = FFMoveRadius / PlayerPrefs.GetFloat("LinearSpeed");
-        await new WaitForSeconds(ActionTime/2);
-        if (DoubleObservtrial)
+        if(actionA != 0 && DoubleObservtrial)
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(actionA);
         }
-        await new WaitForSeconds(observation);
+        else
+        {
+            await new WaitForSeconds(actionA);
+        }
         if (!AlwaysOntrial)
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
         }
-        await new WaitForSeconds(ActionTime/2 - observation);
+        await new WaitForSeconds(actionB);
+        if (actionC != 0 && DoubleObservtrial)
+        {
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(actionC);
+        }
+        else
+        {
+            await new WaitForSeconds(actionC);
+        }
+        if (!AlwaysOntrial)
+        {
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+        }
+        await new WaitForSeconds(actionD);
 
         firefly.SetActive(false);
 

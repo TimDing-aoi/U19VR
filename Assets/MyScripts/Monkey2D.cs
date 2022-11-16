@@ -743,37 +743,33 @@ public class Monkey2D : MonoBehaviour
         t1_acc = Time.time;//Action phase begin time
         ActionStart.Add(Time.realtimeSinceStartup);
         float ActionTime = FFMoveRadius / PlayerPrefs.GetFloat("LinearSpeed");
-        float RandomizedBStart = (float)(ActionTime * (1 - actionB) * rand.NextDouble());
+        float RandomizedBStart = (float)(ActionTime * (1 - PlayerPrefs.GetFloat("Bperiod")) * rand.NextDouble());
         bool isRandomizedB = PlayerPrefs.GetInt("RandomizedB") == 1;
         if (isRandomizedB)
         {
             actionA = RandomizedBStart;
+            actionB = ActionTime * PlayerPrefs.GetFloat("Bperiod");
             actionC = RandomizedBStart + actionB;
             actionD = 0;
         }
-        if(actionA != 0 && DoubleObservtrial)
-        {
-            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
-            await new WaitForSeconds(actionA);
-        }
-        else
-        {
-            await new WaitForSeconds(actionA);
-        }
+        print(FFOpacity);
+
+        //Phase A: FF stays
+        FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+        await new WaitForSeconds(actionA);
+
+        //Phase B: FF goes off
         if (!AlwaysOntrial)
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
         }
         await new WaitForSeconds(actionB);
-        if (actionC != 0 && DoubleObservtrial)
-        {
-            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
-            await new WaitForSeconds(actionC);
-        }
-        else
-        {
-            await new WaitForSeconds(actionC);
-        }
+
+        //Phase C: FF goes back on
+        FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+        await new WaitForSeconds(actionC);
+
+        //Phase D: FF goes back off
         if (!AlwaysOntrial)
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));

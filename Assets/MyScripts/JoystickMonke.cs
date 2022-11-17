@@ -130,21 +130,24 @@ public class JoystickMonke : MonoBehaviour
         //Selfmotion Ramp Down
         {
             float downdur = PlayerPrefs.GetFloat("RampDownDur");
-            float decelTime = Mathf.Ceil(downdur * 90);
-            float SMspeed = SharedMonkey.SelfMotionSpeed;
-            float deceleration = (1 - (decelCounter / decelTime)) * SMspeed;
-            transform.rotation = Quaternion.Euler(0.0f, 90.0f + hbobCounter, 0.0f);
-            moveY = 0;
-            circY = 0;
-            decelCounter++;
-            hbobCounter += deceleration / frameRate;
-            if (hbobCounter > 0)
+            if(downdur != 0)
             {
-                circX = (360 - hbobCounter) * Mathf.Deg2Rad;
-            }
-            else
-            {
-                circX = -hbobCounter * Mathf.Deg2Rad;
+                float decelTime = Mathf.Ceil(downdur * 90);
+                float SMspeed = SharedMonkey.SelfMotionSpeed;
+                float deceleration = (1 - (decelCounter / decelTime)) * SMspeed;
+                transform.rotation = Quaternion.Euler(0.0f, 90.0f + hbobCounter, 0.0f);
+                moveY = 0;
+                circY = 0;
+                decelCounter++;
+                hbobCounter += deceleration / frameRate;
+                if (hbobCounter > 0)
+                {
+                    circX = (360 - hbobCounter) * Mathf.Deg2Rad;
+                }
+                else
+                {
+                    circX = -hbobCounter * Mathf.Deg2Rad;
+                }
             }
         }
         else if (SharedMonkey.selfmotiontrial && SharedMonkey.GFFPhaseFlag == 3)

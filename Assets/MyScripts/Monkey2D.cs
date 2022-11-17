@@ -752,7 +752,6 @@ public class Monkey2D : MonoBehaviour
             actionC = ActionTime - actionA - actionB;
             actionD = 0;
         }
-        print(FFOpacity);
 
         //Phase A: FF stays
         FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));

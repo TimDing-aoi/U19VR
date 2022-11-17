@@ -749,7 +749,7 @@ public class Monkey2D : MonoBehaviour
         {
             actionA = RandomizedBStart;
             actionB = ActionTime * PlayerPrefs.GetFloat("Bperiod");
-            actionC = RandomizedBStart + actionB;
+            actionC = ActionTime - actionA - actionB;
             actionD = 0;
         }
         print(FFOpacity);

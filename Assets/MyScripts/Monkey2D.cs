@@ -203,6 +203,7 @@ public class Monkey2D : MonoBehaviour
     public float actionC;
     public float actionD;
     readonly List<float> ActionBStart = new List<float>();
+    readonly List<float> ActionBTime = new List<float>();
 
     // Rewarded?
     bool rewarded;
@@ -756,6 +757,7 @@ public class Monkey2D : MonoBehaviour
             actionA = RandomizedBStart;
             ActionBStart.Add(RandomizedBStart);
             actionB = ActionTime * PlayerPrefs.GetFloat("Bperiod");
+            ActionBTime.Add(actionB);
             actionC = ActionTime - actionA - actionB;
             actionD = 0;
         }
@@ -977,6 +979,7 @@ public class Monkey2D : MonoBehaviour
             if (isRandomizedB)
             {
                 temp.Add(ActionBStart.Count);
+                temp.Add(ActionBTime.Count);
             }
 
             temp.Sort();
@@ -1017,11 +1020,11 @@ public class Monkey2D : MonoBehaviour
 
                 if (isRandomizedB)
                 {
-                    line += string.Format(",{0}", ActionBStart[i]);
+                    line += string.Format(",{0},{1}", ActionBStart[i],ActionBTime[i]);
                 }
                 else
                 {
-                    line += ",0";
+                    line += ",0,0";
                 }
 
                 csvDisc.AppendLine(line);
@@ -1226,7 +1229,7 @@ public class Monkey2D : MonoBehaviour
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteStartElement("RandomizedB");
-        xmlWriter.WriteString(PlayerPrefs.GetFloat("RandomizedB").ToString());
+        xmlWriter.WriteString(PlayerPrefs.GetInt("RandomizedB").ToString());
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteEndElement();

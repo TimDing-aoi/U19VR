@@ -49,7 +49,8 @@ public class GoToSettings : MonoBehaviour
                     if (children.name == "RandomizedB")
                     {
                         bool field = PlayerPrefs.GetInt(children.name) == 1;
-                        children.GetComponent<UnityEngine.UI.Toggle>().isOn = field;
+                        UnityEngine.UI.Toggle toggle = children.GetComponent<UnityEngine.UI.Toggle>();
+                        toggle.isOn = field;
                     }
                     else
                     if (children.name == "Path" || children.name == "Name" || children.name == "Date")

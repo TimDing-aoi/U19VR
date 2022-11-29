@@ -762,27 +762,78 @@ public class Monkey2D : MonoBehaviour
             actionD = 0;
         }
 
-        //Phase A: FF stays
-        FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
-        await new WaitForSeconds(actionA);
-
-        //Phase B: FF goes off
-        if (!AlwaysOntrial)
+        float CycleTimes = PlayerPrefs.GetFloat("Frequency");
+        float CycleOnRatio = PlayerPrefs.GetFloat("CycleRatio");
+        float CycleOnTime = (ActionTime / CycleTimes) * CycleOnRatio;
+        float CycleOffTime = (ActionTime / CycleTimes) * (1 - CycleOnRatio);
+        float CompensationTime1 = (float)((ActionTime / CycleTimes) * rand.NextDouble());
+        float CompensationTime2 = (float)(ActionTime / CycleTimes) - CompensationTime1;
+        if (CycleTimes > 0)
         {
+            float FFoffCompansation1 = 0;
+            float FFonCompansation1 = 0;
+            if(CompensationTime1 > CycleOffTime)
+            {
+                FFoffCompansation1 = CycleOffTime;
+                FFonCompansation1 = CompensationTime1 - CycleOffTime;
+            }
+            else
+            {
+                FFoffCompansation1 = CompensationTime1;
+                FFonCompansation1 = 0;
+            }
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(FFonCompansation1);
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+            await new WaitForSeconds(FFoffCompansation1);
+            for (int i = 0; i < CycleTimes-1; i++)
+            {
+                FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+                await new WaitForSeconds(CycleOnTime);
+                FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+                await new WaitForSeconds(CycleOffTime);
+            }
+            float FFoffCompansation2 = 0;
+            float FFonCompansation2 = 0;
+            if (CompensationTime2 > CycleOnTime)
+            {
+                FFonCompansation2 = CycleOnTime;
+                FFoffCompansation2 = CompensationTime2 - CycleOnTime;
+            }
+            else
+            {
+                FFonCompansation2 = CompensationTime2;
+                FFoffCompansation2 = 0;
+            }
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(FFonCompansation2);
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+            await new WaitForSeconds(FFoffCompansation2);
         }
-        await new WaitForSeconds(actionB);
-
-        //Phase C: FF goes back on
-        FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
-        await new WaitForSeconds(actionC);
-
-        //Phase D: FF goes back off
-        if (!AlwaysOntrial)
+        else
         {
-            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+            //Phase A: FF stays
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(actionA);
+
+            //Phase B: FF goes off
+            if (!AlwaysOntrial)
+            {
+                FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+            }
+            await new WaitForSeconds(actionB);
+
+            //Phase C: FF goes back on
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(actionC);
+
+            //Phase D: FF goes back off
+            if (!AlwaysOntrial)
+            {
+                FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+            }
+            await new WaitForSeconds(actionD);
         }
-        await new WaitForSeconds(actionD);
 
         firefly.SetActive(false);
 

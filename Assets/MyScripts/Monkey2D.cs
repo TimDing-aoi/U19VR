@@ -236,6 +236,8 @@ public class Monkey2D : MonoBehaviour
     //String Builder to save data
     StringBuilder sb = new StringBuilder();
 
+    //Meta Data file for each trial
+    readonly List<string> MetaData = new List<string>();
     /// <summary>
     /// When the stimulus is activated
     /// </summary>
@@ -987,6 +989,8 @@ public class Monkey2D : MonoBehaviour
     /// </summary>
     public void Save()
     {
+        SaveConfigs();
+
         try
         {
             string firstLine;
@@ -995,7 +999,8 @@ public class Monkey2D : MonoBehaviour
 
             StringBuilder csvDisc = new StringBuilder();
             firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckX,pCheckY,pCheckZ,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
-                "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime,actionBStartRatio"
+                "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime,actionBStartRatio,actionBTime," +
+                "TrialSelfMotionSpeed,Selfmotion,ObservCondition"
             + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetString("Date") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3");
             csvDisc.AppendLine(firstLine);
 
@@ -1078,6 +1083,8 @@ public class Monkey2D : MonoBehaviour
                     line += ",0,0";
                 }
 
+                line += string.Format(",{0}", MetaData[i]);
+
                 csvDisc.AppendLine(line);
 
                 totalScore += score[i];
@@ -1095,7 +1102,6 @@ public class Monkey2D : MonoBehaviour
             PlayerPrefs.SetFloat("Good Trials", totalScore);
             PlayerPrefs.SetInt("Total Trials", n.Count);
 
-            SaveConfigs();
             PlayerPrefs.SetInt("Run Number", PlayerPrefs.GetInt("Run Number") + 1);
         }
         catch (Exception e)
@@ -1145,6 +1151,8 @@ public class Monkey2D : MonoBehaviour
         {
             trial_count++;
             string trialtext = string.Format("{0},{1},{2},{3},{4},{5} \n", trial_count, tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4, tuple.Item5);
+            string metatext = string.Format("{0},{1},{2}", tuple.Item2, tuple.Item3, tuple.Item4);
+            MetaData.Add(metatext);
             File.AppendAllText(metaPath, trialtext);
         }
 
@@ -1281,6 +1289,14 @@ public class Monkey2D : MonoBehaviour
 
         xmlWriter.WriteStartElement("RandomizedB");
         xmlWriter.WriteString(PlayerPrefs.GetInt("RandomizedB").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("Frequency");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("Frequency").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("CycleRatio");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("CycleRatio").ToString());
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteEndElement();

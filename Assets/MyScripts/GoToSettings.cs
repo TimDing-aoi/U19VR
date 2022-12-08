@@ -171,7 +171,6 @@ public class GoToSettings : MonoBehaviour
                 new ExtensionFilter("Extensible Markup Language ", "xml")
             };
             var path = StandaloneFileBrowser.OpenFilePanel("Open File Destination", "", extensions, false);
-            // TODO: set all playerprefs and corresponding text fields to xml settings
 
             XmlDocument doc = new XmlDocument();
             doc.Load(path[0]);
@@ -193,6 +192,21 @@ public class GoToSettings : MonoBehaviour
                                     {
                                         field.text = setting.InnerText;
                                         PlayerPrefs.SetString(children.name, field.text);
+                                    }
+                                }
+                            }
+                        }
+                        else if (children.name == "RandomizedB")
+                        {
+                            UnityEngine.UI.Toggle toggle = children.GetComponent<UnityEngine.UI.Toggle>();
+                            foreach (XmlNode node in doc.DocumentElement.ChildNodes)
+                            {
+                                foreach (XmlNode setting in node.ChildNodes)
+                                {
+                                    if (setting.Name == children.name.Replace(" ", ""))
+                                    {
+                                        toggle.isOn = int.Parse(setting.InnerText) == 1;
+                                        PlayerPrefs.SetInt(children.name, toggle.isOn ? 1 : 0);
                                     }
                                 }
                             }

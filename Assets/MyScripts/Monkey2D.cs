@@ -186,6 +186,7 @@ public class Monkey2D : MonoBehaviour
     readonly List<float> ActionStart = new List<float>();
     readonly List<float> SelfReportStart = new List<float>();
     readonly List<float> FeedbackStart = new List<float>();
+    readonly List<float> CycleShift = new List<float>();
     [HideInInspector] public float programT0 = 0.0f;
 
     //Timeline times, in seconds
@@ -246,6 +247,7 @@ public class Monkey2D : MonoBehaviour
         //Run in background and clear cache
         Application.runInBackground = true;
         sb.Clear();
+        Application.targetFrameRate = 90;
 
         //Juice port
         juiceBox = serial.sp;
@@ -415,7 +417,7 @@ public class Monkey2D : MonoBehaviour
         if (PlayerPrefs.GetFloat("calib") == 0)
         {
             string firstLine = "TrialNum,TrialTime,BackendPhase,OnOff,PosX,PosY,PosZ,RotX,RotY,RotZ,RotW,CleanLinearVelocity,CleanAngularVelocity,FFX,FFY,FFZ,FFV/linear,GazeX,GazeY,GazeZ,GazeX0,GazeY0,GazeZ0,HitX,HitY,HitZ,ConvergeDist," +
-                "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX";
+                "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX,";
             sb.Append(firstLine + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetString("Date") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
         }
     }
@@ -538,7 +540,8 @@ public class Monkey2D : MonoBehaviour
             isEnd = false;
             SendMarker("e", 1000.0f);
         }
-
+        SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
+        bool FF_Fully_Visible = FFcr.materials[0].color == new Color(1f, 1f, 1f, 1f);
         if (PlayerPrefs.GetFloat("calib") == 0)
         {
             string transformedFFPos = new Vector3(firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x).ToString("F8").Trim(toTrim).Replace(" ", "");
@@ -547,7 +550,7 @@ public class Monkey2D : MonoBehaviour
                    trialNum,
                    Time.realtimeSinceStartup,
                    (int)currPhase,
-                   firefly.activeInHierarchy ? 1 : 0,
+                   (firefly.activeInHierarchy && FF_Fully_Visible) ? 1 : 0,
                    string.Join(",", player.transform.position.z, player.transform.position.y, player.transform.position.x),
                    string.Join(",", player.transform.rotation.x, player.transform.rotation.y, player.transform.rotation.z, player.transform.rotation.w),
                    -999,
@@ -648,7 +651,7 @@ public class Monkey2D : MonoBehaviour
 
         //preperation
         GFFPhaseFlag = 1;
-        PreparationStart.Add(Time.realtimeSinceStartup);
+        PreparationStart.Add(Time.realtimeSinceStartup - programT0);
         BlueCircle.SetActive(true); //Blue circle shows up
         LineRenderer lr;
         lr = BlueCircle.GetComponent<LineRenderer>();
@@ -666,7 +669,7 @@ public class Monkey2D : MonoBehaviour
 
         //Habituation
         GFFPhaseFlag = 2;
-        HabituationStart.Add(Time.realtimeSinceStartup);
+        HabituationStart.Add(Time.realtimeSinceStartup - programT0);
         endFrame = (int)(Time.frameCount + frameRate * habituation_1);
         await new WaitUntil(() => Time.frameCount == endFrame);
         for (int Habituation_Frame = 0; Habituation_Frame < frameRate * habituation_2; Habituation_Frame++)
@@ -733,7 +736,7 @@ public class Monkey2D : MonoBehaviour
         GFFTrueRadians = FF_circX * Mathf.Deg2Rad;
         FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
         firefly.SetActive(true);
-        ObservationStart.Add(Time.realtimeSinceStartup);
+        ObservationStart.Add(Time.realtimeSinceStartup - programT0);
 
         endFrame = (int)(Time.frameCount + frameRate * observation);
         await new WaitUntil(() => Time.frameCount == endFrame);
@@ -750,7 +753,7 @@ public class Monkey2D : MonoBehaviour
         //Action
         GFFPhaseFlag = 4;
         t1_acc = Time.time;//Action phase begin time
-        ActionStart.Add(Time.realtimeSinceStartup);
+        ActionStart.Add(Time.realtimeSinceStartup - programT0);
         float ActionTime = FFMoveRadius / PlayerPrefs.GetFloat("LinearSpeed");
         float RandomizedBStart = (float)(ActionTime * (1 - PlayerPrefs.GetFloat("Bperiod")) * rand.NextDouble());
         bool isRandomizedB = PlayerPrefs.GetInt("RandomizedB") == 1;
@@ -770,6 +773,7 @@ public class Monkey2D : MonoBehaviour
         float CycleOffTime = (ActionTime / CycleTimes) * (1 - CycleOnRatio);
         float CompensationTime1 = (float)((ActionTime / CycleTimes) * rand.NextDouble());
         float CompensationTime2 = (float)(ActionTime / CycleTimes) - CompensationTime1;
+        CycleShift.Add(CompensationTime1);
         if (CycleTimes > 0)
         {
             float FFoffCompansation1 = 0;
@@ -857,11 +861,11 @@ public class Monkey2D : MonoBehaviour
 
         //Supposed: self report; but we don't do this for monkeys
         GFFPhaseFlag = 5;
-        SelfReportStart.Add(Time.realtimeSinceStartup);
+        SelfReportStart.Add(Time.realtimeSinceStartup - programT0);
 
         // Feedback
         GFFPhaseFlag = 6;
-        FeedbackStart.Add(Time.realtimeSinceStartup);
+        FeedbackStart.Add(Time.realtimeSinceStartup - programT0);
 
         rewarded = false;
 
@@ -913,7 +917,7 @@ public class Monkey2D : MonoBehaviour
             }
             CIScores.Add(degree_score);
             juiceDuration.Add(juiceTime);
-            rewardTime.Add(Time.realtimeSinceStartup);
+            rewardTime.Add(Time.realtimeSinceStartup - programT0);
             audioSource.Play();
 
             points++;
@@ -1000,11 +1004,12 @@ public class Monkey2D : MonoBehaviour
             StringBuilder csvDisc = new StringBuilder();
             firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckX,pCheckY,pCheckZ,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
                 "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime,actionBStartRatio,actionBTime," +
-                "TrialSelfMotionSpeed,Selfmotion,ObservCondition"
+                "TrialSelfMotionSpeed,Selfmotion,ObservCondition,CycleShift,"
             + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetString("Date") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3");
             csvDisc.AppendLine(firstLine);
 
             bool isRandomizedB = PlayerPrefs.GetInt("RandomizedB") == 1;
+            bool isFlashing = PlayerPrefs.GetFloat("Frequency") > 0;
 
             temp = new List<int>()
             {
@@ -1037,7 +1042,10 @@ public class Monkey2D : MonoBehaviour
                 temp.Add(ActionBStart.Count);
                 temp.Add(ActionBTime.Count);
             }
-
+            if (isFlashing)
+            {
+                temp.Add(CycleShift.Count);
+            }
             temp.Sort();
 
             var totalScore = 0f;
@@ -1076,7 +1084,8 @@ public class Monkey2D : MonoBehaviour
 
                 if (isRandomizedB)
                 {
-                    line += string.Format(",{0},{1}", ActionBStart[i],ActionBTime[i]);
+                    line += ",-999,-999";
+                    //line += string.Format(",{0},{1}", ActionBStart[i],ActionBTime[i]);
                 }
                 else
                 {
@@ -1084,6 +1093,11 @@ public class Monkey2D : MonoBehaviour
                 }
 
                 line += string.Format(",{0}", MetaData[i]);
+
+                if (isFlashing)
+                {
+                    line += string.Format(",{0},", CycleShift[i]);
+                }
 
                 csvDisc.AppendLine(line);
 

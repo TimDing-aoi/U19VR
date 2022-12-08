@@ -418,7 +418,7 @@ public class Monkey2D : MonoBehaviour
         {
             string firstLine = "TrialNum,TrialTime,BackendPhase,OnOff,PosX,PosY,PosZ,RotX,RotY,RotZ,RotW,CleanLinearVelocity,CleanAngularVelocity,FFX,FFY,FFZ,FFV/linear,GazeX,GazeY,GazeZ,GazeX0,GazeY0,GazeZ0,HitX,HitY,HitZ,ConvergeDist," +
                 "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX,";
-            sb.Append(firstLine + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetString("Date") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
+            sb.Append(firstLine + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
         }
     }
 
@@ -1005,7 +1005,7 @@ public class Monkey2D : MonoBehaviour
             firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckX,pCheckY,pCheckZ,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
                 "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime,actionBStartRatio,actionBTime," +
                 "TrialSelfMotionSpeed,Selfmotion,ObservCondition,CycleShift,"
-            + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetString("Date") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3");
+            + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3");
             csvDisc.AppendLine(firstLine);
 
             bool isRandomizedB = PlayerPrefs.GetInt("RandomizedB") == 1;

@@ -1002,7 +1002,7 @@ public class Monkey2D : MonoBehaviour
             List<int> temp;
 
             StringBuilder csvDisc = new StringBuilder();
-            firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckX,pCheckY,pCheckZ,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
+            firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckZ,pCheckY,pCheckX,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
                 "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime,actionBStartRatio,actionBTime," +
                 "TrialSelfMotionSpeed,Selfmotion,ObservCondition,CycleShift,"
             + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3");

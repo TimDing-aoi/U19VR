@@ -774,7 +774,13 @@ public class Monkey2D : MonoBehaviour
         float CompensationTime1 = (float)((ActionTime / CycleTimes) * rand.NextDouble());
         float CompensationTime2 = (float)(ActionTime / CycleTimes) - CompensationTime1;
         CycleShift.Add(CompensationTime1);
-        if (CycleTimes > 0)
+
+        if (AlwaysOntrial)
+        {
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(ActionTime);
+        }
+        else if (CycleTimes > 0)
         {
             float FFoffCompansation1 = 0;
             float FFonCompansation1 = 0;
@@ -823,10 +829,7 @@ public class Monkey2D : MonoBehaviour
             await new WaitForSeconds(actionA);
 
             //Phase B: FF goes off
-            if (!AlwaysOntrial)
-            {
-                FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
-            }
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
             await new WaitForSeconds(actionB);
 
             //Phase C: FF goes back on
@@ -834,10 +837,7 @@ public class Monkey2D : MonoBehaviour
             await new WaitForSeconds(actionC);
 
             //Phase D: FF goes back off
-            if (!AlwaysOntrial)
-            {
-                FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
-            }
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity)); 
             await new WaitForSeconds(actionD);
         }
 

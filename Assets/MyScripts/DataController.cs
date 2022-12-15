@@ -223,7 +223,7 @@ namespace PupilLabs
                     sbPacket = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27}\n",
                         SharedMonkey.trialNum,
                         Time.realtimeSinceStartup,
-                        SharedMonkey.currPhase,
+                        (int)SharedMonkey.currPhase,
                         firefly.activeInHierarchy ? 1 : 0,
                         string.Join(",", player.transform.position.z, player.transform.position.y, player.transform.position.x),
                         string.Join(",", player.transform.rotation.x, player.transform.rotation.y, player.transform.rotation.z, player.transform.rotation.w),
@@ -320,9 +320,6 @@ namespace PupilLabs
                 var path = PlayerPrefs.GetString("Path") + "\\continuous_data_" + PlayerPrefs.GetString("Name") + "_" + DateTime.Today.ToString("MMddyyyy") + "_" + PlayerPrefs.GetInt("Run Number").ToString("D3") + ".txt";
                 File.AppendAllText(path, sb.ToString());
                 sb.Clear();
-
-                var num = PlayerPrefs.GetInt("Run Number") + 1;
-                PlayerPrefs.SetInt("Run Number", num);
 
                 Destroy(this);
 

@@ -725,6 +725,7 @@ public class Monkey2D : MonoBehaviour
                              Math.Sin(2.0 * Math.PI * u2));
             }
         }
+        FF_circX += (observation + PlayerPrefs.GetFloat("RampDownDur")) * SelfMotionSpeed;
         float x = FFMoveRadius * Mathf.Cos(FF_circX * Mathf.Deg2Rad);
         float y = 0;
         float z = FFMoveRadius * Mathf.Sin(FF_circX * Mathf.Deg2Rad);

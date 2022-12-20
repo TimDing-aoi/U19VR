@@ -54,7 +54,8 @@ namespace PupilLabs
         {
             dataController = this;
             sb.Clear();
-            sb.Append("Trial,Status,Timestamp,Mapping Context,Confidence,Target Index,Mode,GazeX,GazeY,GazeZ,Gaze Distance,CenterRX,CenterRY,CenterRZ,CenterLX,CenterLY,CenterLZ,NormRX,NormRY,NormRZ,NormLX,NormLY,NormLZ,Marker," + PlayerPrefs.GetString("Name") + ", " + PlayerPrefs.GetString("Date") + ", " + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
+            sb.Append("Trial,Status,Timestamp,Mapping Context,Confidence,Target Index,Mode,GazeX,GazeY,GazeZ,Gaze Distance,CenterRX,CenterRY,CenterRZ,CenterLX,CenterLY,CenterLZ,NormRX,NormRY,NormRZ,NormLX,NormLY,NormLZ," +
+                "Marker," + PlayerPrefs.GetString("Name") + ", " + PlayerPrefs.GetString("Date") + ", " + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
 
             nullGaze.Add("confidence", 0.0);
             nullGaze.Add("norm_pos", zero2d);
@@ -220,7 +221,7 @@ namespace PupilLabs
                     char[] toTrim = { '(', ')' };
                     string transformedFFPos = new Vector3(firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x).ToString("F8").Trim(toTrim).Replace(" ", "");
                     Vector3 fake_location = new Vector3(-999f, -999f, -999f);
-                    sbPacket = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29},{30}\n",
+                    sbPacket = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29}\n",
                         SharedMonkey.trialNum,
                         Time.realtimeSinceStartup,
                         (int)SharedMonkey.currPhase,
@@ -246,7 +247,6 @@ namespace PupilLabs
                         SharedJoystick.rawX,
                         SharedJoystick.rawY,
                         SharedJoystick.circX * Mathf.Rad2Deg,
-                        gazeDataNow.MappingContext,
                         gazeDataNow.Confidence,
                         gazeDataNow.EyeCenter0.ToString("F5").Trim('(', ')').Replace(" ", ""),
                         gazeDataNow.EyeCenter1.ToString("F5").Trim('(', ')').Replace(" ", ""),
@@ -308,8 +308,8 @@ namespace PupilLabs
                 player = SharedMonkey.player;
 
                 string firstLine = "TrialNum,TrialTime,BackendPhase,OnOff,PosX,PosY,PosZ,RotX,RotY,RotZ,RotW,CleanLinearVelocity,CleanAngularVelocity,FFX,FFY,FFZ,FFV/linear,GazeX,GazeY,GazeZ,GazeX0,GazeY0,GazeZ0,HitX,HitY,HitZ,GazeDist," +
-                "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed," +
-                "Mapping Context,Confidence,CenterRX,CenterRY,CenterRZ,CenterLX,CenterLY,CenterLZ,NormRX,NormRY,NormRZ,NormLX,NormLY,NormLZ";
+                "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX," +
+                "Confidence,CenterRX,CenterRY,CenterRZ,CenterLX,CenterLY,CenterLZ,NormRX,NormRY,NormRZ,NormLX,NormLY,NormLZ";
                 sb.Append(firstLine + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetString("Date") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
 
                 timeSync.UpdateTimeSync();

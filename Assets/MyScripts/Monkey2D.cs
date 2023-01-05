@@ -611,7 +611,7 @@ public class Monkey2D : MonoBehaviour
         var trial_info = AllTrials[trialNum];
         trialNum++;
         n.Add(trialNum);
-        velocity = trial_info.Item1;
+        velocity = -trial_info.Item1;
         SelfMotionSpeed = trial_info.Item2;
         selfmotiontrial = trial_info.Item3 == 1;
         AlwaysOntrial = trial_info.Item4 == 1;
@@ -695,8 +695,8 @@ public class Monkey2D : MonoBehaviour
 
         //Firefly Generation
         System.Random randNoise = new System.Random();
-        float CImean1 = PlayerPrefs.GetFloat("CIFFmean1");
-        float CImean2 = PlayerPrefs.GetFloat("CIFFmean2");
+        float CImean1 = -PlayerPrefs.GetFloat("CIFFmean1");
+        float CImean2 = -PlayerPrefs.GetFloat("CIFFmean2");
         float drawSD1 = PlayerPrefs.GetFloat("CIFFSD1");
         float drawSD2 = PlayerPrefs.GetFloat("CIFFSD2");
         float FF_circX = 999;//FF pos in deg
@@ -901,7 +901,7 @@ public class Monkey2D : MonoBehaviour
             print(string.Format("Window: {0}", RewardWindow));
             print(string.Format("Scored: {0}", degree_score));
         }
-        ffPosStr = string.Format("{0},{1},{2}", firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x);
+        ffPosStr = string.Format("{0},{1},{2}", -firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x);
         distances.Add(degree_score);
 
         if (rewarded)
@@ -939,7 +939,7 @@ public class Monkey2D : MonoBehaviour
         score.Add(rewarded ? 1 : 0);
         ffPos.Add(ffPosStr);
         dist.Add(distances[0].ToString("F5"));
-        cPos.Add(pos.ToString("F5").Trim(toTrim).Replace(" ", ""));
+        cPos.Add(ffPosStr = string.Format("{0},{1},{2}", -pos.z, pos.y, pos.x));
         cRot.Add(rot.ToString("F5").Trim(toTrim).Replace(" ", ""));
 
 
@@ -1002,7 +1002,7 @@ public class Monkey2D : MonoBehaviour
             List<int> temp;
 
             StringBuilder csvDisc = new StringBuilder();
-            firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckZ,pCheckY,pCheckX,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
+            firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckX,pCheckY,pCheckZ,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
                 "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime,actionBStartRatio,actionBTime," +
                 "TrialSelfMotionSpeed,Selfmotion,ObservCondition,CycleShift,"
             + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3");

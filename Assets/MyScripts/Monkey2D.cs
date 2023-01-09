@@ -544,14 +544,14 @@ public class Monkey2D : MonoBehaviour
         bool FF_Fully_Visible = FFcr.materials[0].color == new Color(1f, 1f, 1f, 1f);
         if (PlayerPrefs.GetFloat("calib") == 0)
         {
-            string transformedFFPos = new Vector3(firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x).ToString("F8").Trim(toTrim).Replace(" ", "");
+            string transformedFFPos = new Vector3(-firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x).ToString("F8").Trim(toTrim).Replace(" ", "");
             Vector3 fake_location = new Vector3(-999f, -999f, -999f);
             sb.Append(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24}\n",
                    trialNum,
                    Time.realtimeSinceStartup,
                    (int)currPhase,
                    (firefly.activeInHierarchy && FF_Fully_Visible) ? 1 : 0,
-                   string.Join(",", player.transform.position.z, player.transform.position.y, player.transform.position.x),
+                   string.Join(",", -player.transform.position.z, player.transform.position.y, player.transform.position.x),
                    string.Join(",", player.transform.rotation.x, player.transform.rotation.y, player.transform.rotation.z, player.transform.rotation.w),
                    -999,
                    SharedJoystick.moveX * SharedJoystick.maxJoyRotDeg,
@@ -725,7 +725,7 @@ public class Monkey2D : MonoBehaviour
                              Math.Sin(2.0 * Math.PI * u2));
             }
         }
-        FF_circX += (observation + PlayerPrefs.GetFloat("RampDownDur")) * SelfMotionSpeed;
+        FF_circX += (observation + PlayerPrefs.GetFloat("RampDownDur")) * -SelfMotionSpeed;
         float x = FFMoveRadius * Mathf.Cos(FF_circX * Mathf.Deg2Rad);
         float y = 0;
         float z = FFMoveRadius * Mathf.Sin(FF_circX * Mathf.Deg2Rad);

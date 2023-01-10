@@ -567,7 +567,7 @@ public class Monkey2D : MonoBehaviour
                    GFFTrueDegree * Mathf.Rad2Deg,
                    FFnoise,
                    Time.frameCount,
-                   velocity,
+                   -velocity,
                    SelfMotionSpeed,
                    SharedJoystick.rawX,
                    SharedJoystick.rawY,
@@ -621,7 +621,7 @@ public class Monkey2D : MonoBehaviour
         print(trialset);
         noise_SD = 0; //Not using noise for now
 
-        fv.Add(velocity);
+        fv.Add(trial_info.Item1);
         onDur.Add(observation);
 
         //Was it an always on trial?

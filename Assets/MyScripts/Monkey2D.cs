@@ -1116,6 +1116,8 @@ public class Monkey2D : MonoBehaviour
 
             PlayerPrefs.SetFloat("Good Trials", totalScore);
             PlayerPrefs.SetInt("Total Trials", n.Count);
+
+            PlayerPrefs.SetInt("Run Number", PlayerPrefs.GetInt("Run Number") + 1);
         }
         catch (Exception e)
         {

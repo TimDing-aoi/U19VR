@@ -8,6 +8,7 @@ public class GoToScene : MonoBehaviour
     void Start()
     {
         //UnityEngine.Debug.Log("Device Name: " + SystemInfo.deviceName + "\nDevice Model: " + SystemInfo.deviceModel + "\nCPU Name: " + SystemInfo.processorType + "\nCPU Frequency: " + SystemInfo.processorFrequency + "\nGPU Name: " + SystemInfo.graphicsDeviceName);
+        PlayerPrefs.SetInt("Run Number", PlayerPrefs.GetInt("Run Number") + 1);
 
         PlayerPrefs.SetString("Switch Mode", "experiment");
     }

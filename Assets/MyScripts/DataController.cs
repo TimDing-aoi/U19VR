@@ -320,7 +320,7 @@ namespace PupilLabs
 
                 print("saving");
 
-                var path = PlayerPrefs.GetString("Path") + "\\continuous_data_" + PlayerPrefs.GetString("Name") + "_" + DateTime.Today.ToString("MMddyyyy") + "_" + (PlayerPrefs.GetInt("Run Number") - 1).ToString("D3") + ".txt";
+                var path = PlayerPrefs.GetString("Path") + "\\continuous_data_" + PlayerPrefs.GetString("Name") + "_" + DateTime.Today.ToString("MMddyyyy") + "_" + PlayerPrefs.GetInt("Run Number").ToString("D3") + ".txt";
                 File.AppendAllText(path, sb.ToString());
                 sb.Clear();
 

@@ -79,6 +79,7 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public bool selfmotiontrial;
     [HideInInspector] public bool AlwaysOntrial;
     [HideInInspector] public bool DoubleObservtrial;
+    [HideInInspector] public float isFFMoving;
     [HideInInspector] public float velocity;
     [HideInInspector] public float noise_SD;
     [HideInInspector] public float velocity_Noised;
@@ -845,6 +846,14 @@ public class Monkey2D : MonoBehaviour
         firefly.SetActive(false);
 
         //Moving on to check/feedback
+        if(velocity != 0)
+        {
+            isFFMoving = true
+        }
+        else
+        {
+            isFFMoving = false;
+        }
         source.Cancel();
         velocity = 0.0f;
         phase = Phases.check;
@@ -893,6 +902,16 @@ public class Monkey2D : MonoBehaviour
             print(string.Format("Window: {0}", RewardWindowOn));
             print(string.Format("Scored: {0}", degree_score));
         }
+        else if (isFFMoving)
+        {
+            float RwdMultiplier = PlayerPrefs.GetFloat("RwdMultiplier");
+            if (degree_score <= RewardWindow * RwdMultiplier)
+            {
+                rewarded = true;
+            }
+            print(string.Format("Window: {0}", RewardWindow * RwdMultiplier));
+            print(string.Format("Scored: {0}", degree_score));
+        }
         else
         {
             if (degree_score <= RewardWindow)
@@ -911,6 +930,11 @@ public class Monkey2D : MonoBehaviour
             if (AlwaysOntrial)
             {
                 juiceTime = Mathf.Lerp(maxJuiceTime, minJuiceTime, Mathf.InverseLerp(0.0f, RewardWindowOn, degree_score));
+            }
+            else if (isFFMoving)
+            {
+                float RwdMultiplier = PlayerPrefs.GetFloat("RwdMultiplier");
+                juiceTime = Mathf.Lerp(maxJuiceTime, minJuiceTime, Mathf.InverseLerp(0.0f, RewardWindow * RwdMultiplier, degree_score));
             }
             else
             {

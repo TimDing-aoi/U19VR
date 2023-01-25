@@ -848,7 +848,7 @@ public class Monkey2D : MonoBehaviour
         //Moving on to check/feedback
         if(velocity != 0)
         {
-            isFFMoving = true
+            isFFMoving = true;
         }
         else
         {

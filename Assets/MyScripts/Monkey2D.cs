@@ -1398,6 +1398,10 @@ public class Monkey2D : MonoBehaviour
         xmlWriter.WriteString(PlayerPrefs.GetFloat("RewardWindow").ToString());
         xmlWriter.WriteEndElement();
 
+        xmlWriter.WriteStartElement("RwdMultiplier");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("RwdMultiplier").ToString());
+        xmlWriter.WriteEndElement();
+
         xmlWriter.WriteStartElement("RewardWindowOn");
         xmlWriter.WriteString(PlayerPrefs.GetFloat("RewardWindowOn").ToString());
         xmlWriter.WriteEndElement();

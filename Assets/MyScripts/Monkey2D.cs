@@ -79,7 +79,7 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public bool selfmotiontrial;
     [HideInInspector] public bool AlwaysOntrial;
     [HideInInspector] public bool DoubleObservtrial;
-    [HideInInspector] public float isFFMoving;
+    [HideInInspector] public bool isFFMoving;
     [HideInInspector] public float velocity;
     [HideInInspector] public float noise_SD;
     [HideInInspector] public float velocity_Noised;
@@ -769,12 +769,13 @@ public class Monkey2D : MonoBehaviour
             actionD = 0;
         }
 
-        float CycleTimes = PlayerPrefs.GetFloat("Frequency");
+        float CycleTimes = PlayerPrefs.GetFloat("Frequency") * ActionTime;
         float CycleOnRatio = PlayerPrefs.GetFloat("CycleRatio");
         float CycleOnTime = (ActionTime / CycleTimes) * CycleOnRatio;
         float CycleOffTime = (ActionTime / CycleTimes) * (1 - CycleOnRatio);
-        float CompensationTime1 = (float)((ActionTime / CycleTimes) * rand.NextDouble());
-        float CompensationTime2 = (float)(ActionTime / CycleTimes) - CompensationTime1;
+        float CompensationRatioFirstHalf = (float)rand.NextDouble();
+        float CompensationTime1 = (float)((ActionTime / CycleTimes) * CompensationRatioFirstHalf);
+        float CompensationTime2;
         CycleShift.Add(CompensationTime1);
 
         if (AlwaysOntrial)
@@ -800,12 +801,27 @@ public class Monkey2D : MonoBehaviour
             await new WaitForSeconds(FFonCompansation1);
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
             await new WaitForSeconds(FFoffCompansation1);
-            for (int i = 0; i < CycleTimes-1; i++)
+            int i;
+            for (i = 0; i < CycleTimes-2; i++)
             {
                 FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
                 await new WaitForSeconds(CycleOnTime);
                 FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
                 await new WaitForSeconds(CycleOffTime);
+            }
+            float cycles_left = CycleTimes - i - CompensationRatioFirstHalf;
+            if (cycles_left > 1)
+            {
+                FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+                await new WaitForSeconds(CycleOnTime);
+                FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+                await new WaitForSeconds(CycleOffTime);
+                cycles_left--;
+                CompensationTime2 = (float)(ActionTime / CycleTimes) * cycles_left;
+            }
+            else
+            {
+                CompensationTime2 = (float)(ActionTime / CycleTimes) * cycles_left;
             }
             float FFoffCompansation2 = 0;
             float FFonCompansation2 = 0;

@@ -842,7 +842,9 @@ public class Monkey2D : MonoBehaviour
         }
         else
         {
-            //Phase A: FF stays
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+            await new WaitForSeconds(ActionTime);
+            /*//Phase A: FF stays
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
             await new WaitForSeconds(actionA);
 
@@ -856,7 +858,7 @@ public class Monkey2D : MonoBehaviour
 
             //Phase D: FF goes back off
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity)); 
-            await new WaitForSeconds(actionD);
+            await new WaitForSeconds(actionD);*/
         }
 
         firefly.SetActive(false);

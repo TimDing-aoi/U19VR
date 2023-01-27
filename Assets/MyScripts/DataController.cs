@@ -221,11 +221,13 @@ namespace PupilLabs
                     char[] toTrim = { '(', ')' };
                     string transformedFFPos = new Vector3(-firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x).ToString("F8").Trim(toTrim).Replace(" ", "");
                     Vector3 fake_location = new Vector3(-999f, -999f, -999f);
+                    SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
+                    bool FF_Fully_Visible = FFcr.materials[0].color == new Color(1f, 1f, 1f, 1f);
                     sbPacket = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29}\n",
                         SharedMonkey.trialNum,
                         Time.realtimeSinceStartup,
                         (int)SharedMonkey.currPhase,
-                        firefly.activeInHierarchy ? 1 : 0,
+                        (firefly.activeInHierarchy && FF_Fully_Visible) ? 1 : 0,
                         string.Join(",", -player.transform.position.z, player.transform.position.y, player.transform.position.x),
                         string.Join(",", player.transform.rotation.x, player.transform.rotation.y, player.transform.rotation.z, player.transform.rotation.w),
                         -999,

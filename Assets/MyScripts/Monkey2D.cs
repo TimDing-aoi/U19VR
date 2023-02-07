@@ -769,6 +769,12 @@ public class Monkey2D : MonoBehaviour
             actionD = 0;
         }
 
+        float SecondObservation = PlayerPrefs.GetFloat("SecondObservation");
+        if (SecondObservation > 0)
+        {
+            ActionTime -= SecondObservation;
+        }
+
         float CycleTimes = PlayerPrefs.GetFloat("Frequency") * ActionTime;
         float CycleOnRatio = PlayerPrefs.GetFloat("CycleRatio");
         float CycleOnTime = (ActionTime / CycleTimes) * CycleOnRatio;
@@ -839,6 +845,13 @@ public class Monkey2D : MonoBehaviour
             await new WaitForSeconds(FFonCompansation2);
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
             await new WaitForSeconds(FFoffCompansation2);
+        }
+        else if (SecondObservation > 0)
+        {
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+            await new WaitForSeconds(ActionTime);
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(SecondObservation);
         }
         else
         {
@@ -1410,6 +1423,10 @@ public class Monkey2D : MonoBehaviour
 
         xmlWriter.WriteStartElement("FFOpacity");
         xmlWriter.WriteString(PlayerPrefs.GetFloat("FFOpacity").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("SecondObservation");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("SecondObservation").ToString());
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteEndElement();

@@ -788,6 +788,7 @@ public class Monkey2D : MonoBehaviour
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
             await new WaitForSeconds(ActionTime);
+            await new WaitForSeconds(SecondObservation);
         }
         else if (CycleTimes > 0)
         {

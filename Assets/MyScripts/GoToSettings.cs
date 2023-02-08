@@ -19,6 +19,7 @@ public class GoToSettings : MonoBehaviour
     public GameObject obj;
     private TMP_InputField input;
     public GameObject settingMenu1;
+    public GameObject settingMenu2;
 
     // Start is called before the first frame update
     void Start()
@@ -244,5 +245,11 @@ public class GoToSettings : MonoBehaviour
         PlayerPrefs.DeleteAll();
         PlayerPrefs.SetInt("Run Number", 1);
         ToSettings();
+    }
+
+    public void SwitchPage()
+    {
+        settingMenu1.SetActive(!settingMenu1.activeInHierarchy);
+        settingMenu2.SetActive(!settingMenu1.activeInHierarchy);
     }
 }

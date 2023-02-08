@@ -188,7 +188,7 @@ namespace PupilLabs
             status = Status.none;
             MicroStimuFlag = MicroStimuF.ITI;
 
-            isAuto = true;//PlayerPrefs.GetInt("isAuto") == 1;
+            isAuto = PlayerPrefs.GetInt("isAuto") == 1;
             juiceTime = PlayerPrefs.GetFloat("Calibration Juice Time");
             totalTime = PlayerPrefs.GetFloat("Presentation Time");
             ignoreInitialSeconds = PlayerPrefs.GetFloat("Grace Period");

@@ -88,6 +88,7 @@ namespace PupilLabs
         static List<int> targetIndex = new List<int>();
 
         static List<float> StimuGapTime = new List<float>();
+        static List<float> FixationTime = new List<float>();
         static List<float> StimuStartTime = new List<float>();
         readonly List<float> rewardStartTime = new List<float>();
         readonly List<float> beginTime = new List<float>();
@@ -156,10 +157,15 @@ namespace PupilLabs
         [HideInInspector]
         public float RewardGap = 0;
         [HideInInspector]
+        public float RewardThreshMin = 0;
+        [HideInInspector]
+        public float RewardThreshMax = 0;
+        [HideInInspector]
         public float RewardThresh = 0;
         [HideInInspector]
         public float TotalTrials = 0;
-        [HideInInspector] public enum Status
+        [HideInInspector]
+        public enum Status
         {
             none = 0,
             calibration = 1,
@@ -188,7 +194,7 @@ namespace PupilLabs
             status = Status.none;
             MicroStimuFlag = MicroStimuF.ITI;
 
-            isAuto = true;//PlayerPrefs.GetInt("isAuto") == 1;
+            isAuto = PlayerPrefs.GetInt("isAuto") == 1;
             juiceTime = PlayerPrefs.GetFloat("Calibration Juice Time");
             totalTime = PlayerPrefs.GetFloat("Presentation Time");
             ignoreInitialSeconds = PlayerPrefs.GetFloat("Grace Period");
@@ -207,7 +213,9 @@ namespace PupilLabs
             StimuGapMin = PlayerPrefs.GetFloat("StimuGapMin");
             StimuGapMax = PlayerPrefs.GetFloat("StimuGapMax");
             RewardGap = PlayerPrefs.GetFloat("RewardGap");
-            RewardThresh = PlayerPrefs.GetFloat("RewardThresh");
+            RewardThreshMin = PlayerPrefs.GetFloat("RewardThreshMin");
+            RewardThreshMax = PlayerPrefs.GetFloat("RewardThreshMax");
+            RewardThresh = (float)(RewardThreshMin + random.NextDouble() * (RewardThreshMax - RewardThreshMin));
 
             TotalTrials = PlayerPrefs.GetFloat("StimNumTrials");
 
@@ -307,8 +315,8 @@ namespace PupilLabs
             window.transform.localScale = new Vector3(Mathf.Tan(xAngle * Mathf.Deg2Rad / 2.0f) * 2.0f * scale, Mathf.Tan(yAngle * Mathf.Deg2Rad / 2.0f) * 2.0f * scale, 1f);
             marker.localScale = markerSize * Vector3.one * scale;
 
-            xThreshold = Mathf.Tan(xAngle * Mathf.Deg2Rad / 2.0f ) * scale;
-            yThreshold = Mathf.Tan(yAngle * Mathf.Deg2Rad / 2.0f ) * scale;
+            xThreshold = Mathf.Tan(xAngle * Mathf.Deg2Rad / 2.0f) * scale;
+            yThreshold = Mathf.Tan(yAngle * Mathf.Deg2Rad / 2.0f) * scale;
 
             //Vector3 pos = Vector3.zero;
 
@@ -438,9 +446,9 @@ namespace PupilLabs
                     flagChangePos = !flagChangePos;
                 }
 
-                if (targetIdx>8)
+                if (targetIdx > 8)
                 {
-                    targetIdx=0;
+                    targetIdx = 0;
                 }
 
                 if (!calibration.IsCalibrating && !flagFuseTest && !flagMicroStimu)
@@ -707,7 +715,7 @@ namespace PupilLabs
 
                     flagWait = !flagWait;
                 }
-                
+
                 if (trialNum >= 225)
                 {
                     ToggleFuseTest();
@@ -761,23 +769,24 @@ namespace PupilLabs
                 }
                 tLastTrial = tNow;
 
-                if(StimuGap == 0)
+                if (StimuGap == 0)
                 {
-                    StimuGap = (float)(StimuGapMin + (StimuGapMax-StimuGapMin) * random.NextDouble());
+                    StimuGap = (float)(StimuGapMin + (StimuGapMax - StimuGapMin) * random.NextDouble());
                     StimuGapTime.Add(StimuGap);
                 }
             }
-            else if(tNow - tLastTrial < StimuGap && tTotalFix >= RewardThresh)
+            else if (tNow - tLastTrial < StimuGap && tTotalFix >= RewardThresh)
             {
                 print("stimu gap");
                 previewMarkers[4].SetActive(false);
+                marker.gameObject.SetActive(false);
                 window.SetActive(false);
                 window.gameObject.GetComponent<SpriteRenderer>().enabled = false;
                 MicroStimuFlag = MicroStimuF.Trial;
                 //stimulation gap time
             }
             //Trial ended
-            else if(MicroStimuFlag == MicroStimuF.Trial && tTotalFix >= RewardThresh)
+            else if (MicroStimuFlag == MicroStimuF.Trial && tTotalFix >= RewardThresh)
             {
                 print("stimu");
                 StimuStartTime.Add(tNow);
@@ -803,7 +812,7 @@ namespace PupilLabs
                 //reward gap time
             }
             //stimulation ended
-            else if(MicroStimuFlag == MicroStimuF.Stimulation)
+            else if (MicroStimuFlag == MicroStimuF.Stimulation)
             {
                 print("reward");
                 MicroStimuFlag = MicroStimuF.Reward;
@@ -837,7 +846,7 @@ namespace PupilLabs
                 flagReward = true;
                 LastMarker = 4;
             }
-            else if (tNow - tLastITI < StimuRewardDur * 0.001 + StimuITI && MicroStimuFlag == MicroStimuF.Reward || 
+            else if (tNow - tLastITI < StimuRewardDur * 0.001 + StimuITI && MicroStimuFlag == MicroStimuF.Reward ||
                 tNow - tLastTrial < StimuITI && tTotalFix < RewardThresh && MicroStimuFlag == MicroStimuF.ITI)
             {
                 flagReward = false;
@@ -860,6 +869,8 @@ namespace PupilLabs
             {
                 endMarkerFlag = false;
                 print("Next trial.");
+                FixationTime.Add(RewardThresh);
+                RewardThresh = (float)(RewardThreshMin + random.NextDouble() * (RewardThreshMax - RewardThreshMin));
                 trialNum++;
                 tLastITI = tNow;
                 tLastTrial = tNow;
@@ -872,7 +883,7 @@ namespace PupilLabs
             }
         }
 
-            public void StopFuseTest()
+        public void StopFuseTest()
         {
             Debug.Log("Stopping Fuse Test.");
 
@@ -1033,7 +1044,7 @@ namespace PupilLabs
                     return;
                 }
 
-                if (Mathf.Abs(gazeX - marker.position.x) <= xThreshold 
+                if (Mathf.Abs(gazeX - marker.position.x) <= xThreshold
                     && Mathf.Abs(gazeY - marker.position.y) <= yThreshold
                     && flagCalibrating)
                 {
@@ -1048,7 +1059,7 @@ namespace PupilLabs
 
                     //if (isAuto) tStartITI = Time.time;
 
-                    
+
 
                     tTotalFix += tNow - tLastSample;
                 }
@@ -1061,9 +1072,27 @@ namespace PupilLabs
 
                 tLastSample = tNow;
 
+                if (tTotalFix >= secondsPerTarget && !isAuto && marker.gameObject.activeInHierarchy)
+                {
+                    string toSend = "ij" + juiceTime.ToString();
+                    try
+                    {
+                        flagReward = true;
+                        sp.Write(toSend);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log(e);
+                    }
+
+                    numCorrect++;
+
+                    tTotalFix = 0.0f;
+                }
+
                 if (tNow - tLastTarget >= totalTime)
                 {
-                    if (tTotalFix >= secondsPerTarget)
+                    if (tTotalFix >= secondsPerTarget && isAuto)
                     {
                         string toSend = "ij" + juiceTime.ToString();
                         try
@@ -1071,7 +1100,7 @@ namespace PupilLabs
                             flagReward = true;
                             sp.Write(toSend);
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             Debug.Log(e);
                         }
@@ -1098,7 +1127,7 @@ namespace PupilLabs
                         {
                             print("auto");
                             autoIdx++;
-                            targetIdx = order[autoIdx]; 
+                            targetIdx = order[autoIdx];
                             tStartITI = Time.time;
                         }
                         else
@@ -1301,7 +1330,7 @@ namespace PupilLabs
 
         private void MicroStimuSave()
         {
-            string firstLine = "trial,Begin Time, End Time,Stimulation Gap Time,Stimulation Start Time,Reward Start Time";
+            string firstLine = "trial,Begin Time, End Time,Stimulation Gap Time,Stimulation Start Time,Reward Start Time,Fixation Time";
 
             List<int> temp;
 
@@ -1316,7 +1345,8 @@ namespace PupilLabs
                 StimuStartTime.Count,
                 beginTime.Count,
                 endTime.Count,
-                rewardStartTime.Count
+                rewardStartTime.Count,
+                FixationTime.Count
             };
 
             temp.Sort();
@@ -1324,13 +1354,14 @@ namespace PupilLabs
             //print(endTime.Count);
             for (int i = 0; i < temp[0]; i++)
             {
-                var line = string.Format("{0},{1},{2},{3},{4},{5}",
+                var line = string.Format("{0},{1},{2},{3},{4},{5},{6}",
                     trialNumber[i],
                     beginTime[i],
                     endTime[i],
                     StimuGapTime[i],
                     StimuStartTime[i],
-                    rewardStartTime[i]);
+                    rewardStartTime[i],
+                    FixationTime[i]);
                 csvDisc.AppendLine(line);
             }
 

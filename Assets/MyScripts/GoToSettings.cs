@@ -72,6 +72,39 @@ public class GoToSettings : MonoBehaviour
                 }
             }
         }
+        settingMenu2.SetActive(true);
+        foreach (Transform child in settingMenu2.transform)
+        {
+            foreach (Transform children in child)
+            {
+                if (children.gameObject.CompareTag("Setting"))
+                {
+                    if (children.name == "RandomizedB")
+                    {
+                        bool field = PlayerPrefs.GetInt(children.name) == 1;
+                        UnityEngine.UI.Toggle toggle = children.GetComponent<UnityEngine.UI.Toggle>();
+                        toggle.isOn = field;
+                    }
+                    else
+                    if (children.name == "Path" || children.name == "Name" || children.name == "Date")
+                    {
+                        TMP_InputField field = children.GetComponent<TMP_InputField>();
+                        string LastValue = PlayerPrefs.GetString(children.name);
+                        field.text = LastValue;
+                    }
+                    else
+                    {
+                        TMP_InputField field = children.GetComponent<TMP_InputField>();
+                        float LastValue = PlayerPrefs.GetFloat(children.name);
+                        if (field != null)
+                        {
+                            field.text = LastValue.ToString();
+                        }
+                    }
+                }
+            }
+        }
+        settingMenu2.SetActive(false);
     }
 
     public void BeginCalibration()

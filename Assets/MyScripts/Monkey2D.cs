@@ -891,6 +891,7 @@ public class Monkey2D : MonoBehaviour
         GFFPhaseFlag = 5;
         SelfReportStart.Add(Time.realtimeSinceStartup - programT0);
 
+        SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
         float SecondObservation = PlayerPrefs.GetFloat("SecondObservation");
         if (SecondObservation > 0)
         {

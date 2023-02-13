@@ -1009,7 +1009,6 @@ public class Monkey2D : MonoBehaviour
         isEnd = true;
 
         isIntertrail = true;
-        await new WaitForSeconds(wait);
 
         phase = Phases.begin;
     }

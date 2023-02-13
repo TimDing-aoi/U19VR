@@ -16720,7 +16720,7 @@ MonoBehaviour:
   settingMenu: {fileID: 478170140}
   obj: {fileID: 682919493}
   settingMenu1: {fileID: 1431257420}
-  settingMenu2: {fileID: 0}
+  settingMenu2: {fileID: 286175312}
 --- !u!1 &685621622
 GameObject:
   m_ObjectHideFlags: 0

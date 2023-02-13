@@ -893,7 +893,7 @@ public class Monkey2D : MonoBehaviour
 
         SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
         float SecondObservation = PlayerPrefs.GetFloat("SecondObservation");
-        if (SecondObservation > 0)
+        if (SecondObservation > 0 && !AlwaysOntrial)
         {
             firefly.SetActive(true);
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));

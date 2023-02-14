@@ -769,6 +769,12 @@ public class Monkey2D : MonoBehaviour
             actionD = 0;
         }
 
+        float SecondObservation = PlayerPrefs.GetFloat("SecondObservation");
+        if (SecondObservation > 0)
+        {
+            ActionTime -= SecondObservation;
+        }
+
         float CycleTimes = PlayerPrefs.GetFloat("Frequency") * ActionTime;
         float CycleOnRatio = PlayerPrefs.GetFloat("CycleRatio");
         float CycleOnTime = (ActionTime / CycleTimes) * CycleOnRatio;
@@ -782,6 +788,7 @@ public class Monkey2D : MonoBehaviour
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
             await new WaitForSeconds(ActionTime);
+            await new WaitForSeconds(SecondObservation);
         }
         else if (CycleTimes > 0)
         {
@@ -840,6 +847,13 @@ public class Monkey2D : MonoBehaviour
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
             await new WaitForSeconds(FFoffCompansation2);
         }
+        else if (SecondObservation > 0)
+        {
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
+            await new WaitForSeconds(ActionTime);
+            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
+            await new WaitForSeconds(SecondObservation);
+        }
         else
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
@@ -893,7 +907,7 @@ public class Monkey2D : MonoBehaviour
 
         SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
         float SecondObservation = PlayerPrefs.GetFloat("SecondObservation");
-        if (SecondObservation > 0 && !AlwaysOntrial)
+        if (SecondObservation > 0 && !AlwaysOntrial && false)
         {
             firefly.SetActive(true);
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));

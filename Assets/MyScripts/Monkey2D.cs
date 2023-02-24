@@ -199,14 +199,6 @@ public class Monkey2D : MonoBehaviour
     public float habituation_3 = 0.05f;
     public float observation;
 
-    //Randomized disappearing params for Training
-    public float actionA;
-    public float actionB;
-    public float actionC;
-    public float actionD;
-    readonly List<float> ActionBStart = new List<float>();
-    readonly List<float> ActionBTime = new List<float>();
-
     // Rewarded?
     bool rewarded;
     readonly List<int> score = new List<int>();
@@ -346,11 +338,6 @@ public class Monkey2D : MonoBehaviour
 
         //Action Timeline
         float ActionTime = FFMoveRadius / PlayerPrefs.GetFloat("LinearSpeed");
-        float ActionTotal = PlayerPrefs.GetFloat("Aperiod") + PlayerPrefs.GetFloat("Bperiod") + PlayerPrefs.GetFloat("Cperiod") + PlayerPrefs.GetFloat("Dperiod");
-        actionA = ActionTime * (PlayerPrefs.GetFloat("Aperiod") / ActionTotal);
-        actionB = ActionTime * (PlayerPrefs.GetFloat("Bperiod") / ActionTotal);
-        actionC = ActionTime * (PlayerPrefs.GetFloat("Cperiod") / ActionTotal);
-        actionD = ActionTime * (PlayerPrefs.GetFloat("Dperiod") / ActionTotal);
 
         //Pre-generating trial conditions
         //11 FF velocities
@@ -765,17 +752,6 @@ public class Monkey2D : MonoBehaviour
         t1_acc = Time.time;//Action phase begin time
         ActionStart.Add(Time.realtimeSinceStartup - programT0);
         float ActionTime = FFMoveRadius / PlayerPrefs.GetFloat("LinearSpeed");
-        float RandomizedBStart = (float)(ActionTime * (1 - PlayerPrefs.GetFloat("Bperiod")) * rand.NextDouble());
-        bool isRandomizedB = PlayerPrefs.GetInt("RandomizedB") == 1;
-        if (isRandomizedB)
-        {
-            actionA = RandomizedBStart;
-            ActionBStart.Add(RandomizedBStart);
-            actionB = ActionTime * PlayerPrefs.GetFloat("Bperiod");
-            ActionBTime.Add(actionB);
-            actionC = ActionTime - actionA - actionB;
-            actionD = 0;
-        }
 
         float SecondObservation = PlayerPrefs.GetFloat("SecondObservation");
         if (SecondObservation > 0)
@@ -866,21 +842,6 @@ public class Monkey2D : MonoBehaviour
         {
             FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
             await new WaitForSeconds(ActionTime);
-            /*//Phase A: FF stays
-            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
-            await new WaitForSeconds(actionA);
-
-            //Phase B: FF goes off
-            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity));
-            await new WaitForSeconds(actionB);
-
-            //Phase C: FF goes back on
-            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, 1f));
-            await new WaitForSeconds(actionC);
-
-            //Phase D: FF goes back off
-            FFcr.materials[0].SetColor("_Color", new Color(1f, 1f, 1f, FFOpacity)); 
-            await new WaitForSeconds(actionD);*/
         }
 
         firefly.SetActive(false);
@@ -1077,12 +1038,11 @@ public class Monkey2D : MonoBehaviour
 
             StringBuilder csvDisc = new StringBuilder();
             firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckX,pCheckY,pCheckZ,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
-                "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime,actionBStartRatio,actionBTime," +
+                "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime," +
                 "TrialSelfMotionSpeed,Selfmotion,ObservCondition,CycleShift,"
             + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3");
             csvDisc.AppendLine(firstLine);
 
-            bool isRandomizedB = PlayerPrefs.GetInt("RandomizedB") == 1;
             bool isFlashing = PlayerPrefs.GetFloat("Frequency") > 0;
 
             temp = new List<int>()
@@ -1111,11 +1071,7 @@ public class Monkey2D : MonoBehaviour
                 juiceDuration.Count,
                 rewardTime.Count
             };
-            if (isRandomizedB)
-            {
-                temp.Add(ActionBStart.Count);
-                temp.Add(ActionBTime.Count);
-            }
+            
             if (isFlashing)
             {
                 temp.Add(CycleShift.Count);
@@ -1155,16 +1111,6 @@ public class Monkey2D : MonoBehaviour
                         CIScores[i],
                         juiceDuration[i],
                         rewardTime[i]);
-
-                if (isRandomizedB)
-                {
-                    line += ",-999,-999";
-                    //line += string.Format(",{0},{1}", ActionBStart[i],ActionBTime[i]);
-                }
-                else
-                {
-                    line += ",0,0";
-                }
 
                 line += string.Format(",{0}", MetaData[i]);
 
@@ -1357,32 +1303,32 @@ public class Monkey2D : MonoBehaviour
         xmlWriter.WriteString(PlayerPrefs.GetFloat("RatioSD1").ToString());
         xmlWriter.WriteEndElement();
 
-        xmlWriter.WriteStartElement("Aperiod");
-        xmlWriter.WriteString(PlayerPrefs.GetFloat("Aperiod").ToString());
-        xmlWriter.WriteEndElement();
-
-        xmlWriter.WriteStartElement("Bperiod");
-        xmlWriter.WriteString(PlayerPrefs.GetFloat("Bperiod").ToString());
-        xmlWriter.WriteEndElement();
-
-        xmlWriter.WriteStartElement("Cperiod");
-        xmlWriter.WriteString(PlayerPrefs.GetFloat("Cperiod").ToString());
-        xmlWriter.WriteEndElement();
-
-        xmlWriter.WriteStartElement("Dperiod");
-        xmlWriter.WriteString(PlayerPrefs.GetFloat("Dperiod").ToString());
-        xmlWriter.WriteEndElement();
-
-        xmlWriter.WriteStartElement("RandomizedB");
-        xmlWriter.WriteString(PlayerPrefs.GetInt("RandomizedB").ToString());
-        xmlWriter.WriteEndElement();
-
         xmlWriter.WriteStartElement("Frequency");
         xmlWriter.WriteString(PlayerPrefs.GetFloat("Frequency").ToString());
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteStartElement("CycleRatio");
         xmlWriter.WriteString(PlayerPrefs.GetFloat("CycleRatio").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("RwdMultiplier");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("RwdMultiplier").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("SecondObservation");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("SecondObservation").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("UseUniform");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("UseUniform").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("uniformMin");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("uniformMin").ToString());
+        xmlWriter.WriteEndElement();
+
+        xmlWriter.WriteStartElement("uniformMax");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("uniformMax").ToString());
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteEndElement();

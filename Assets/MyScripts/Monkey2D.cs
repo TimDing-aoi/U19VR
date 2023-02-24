@@ -702,11 +702,19 @@ public class Monkey2D : MonoBehaviour
         float drawSD2 = PlayerPrefs.GetFloat("CIFFSD2");
         float FF_circX = 999;//FF pos in deg
 
+        bool useUniform = PlayerPrefs.GetFloat("UseUniform") != 0;
+        float uniformMin = PlayerPrefs.GetFloat("uniformMin");
+        float uniformMax = PlayerPrefs.GetFloat("uniformMax");
+
         float player_circX = SharedJoystick.circX * Mathf.Rad2Deg;//player pos in deg
         float RatioSD1 = PlayerPrefs.GetFloat("RatioSD1");
         bool use_first_dist = randNoise.NextDouble() < RatioSD1;
         //Choose one of the two given distributions to determine where to generate the FF
-        if (use_first_dist)
+        if (useUniform)
+        {
+            FF_circX = (float)(player_circX + uniformMin + randNoise.NextDouble() * (uniformMax - uniformMin));
+        }
+        else if(use_first_dist)
         {
             while (Mathf.Abs(FF_circX - player_circX) > 22.5)
             {

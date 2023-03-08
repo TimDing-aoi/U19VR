@@ -132,7 +132,7 @@ public class Monkey2D : MonoBehaviour
     public float FFnoise = 0;
     public float GFFTrueDegree = 0;
     public float SelfMotionSpeed = 0;
-    private float GFFTrueRadians = 0;
+    public float GFFTrueRadians = 0;
     readonly public List<float> FFnoiseList = new List<float>();
     readonly public List<float> CIScores = new List<float>();
 
@@ -963,6 +963,8 @@ public class Monkey2D : MonoBehaviour
         }
         else
         {
+            firefly.SetActive(true);
+
             audioSource.clip = loseSound;
             CIScores.Add(0.0f);
             juiceDuration.Add(0.0f);
@@ -986,14 +988,14 @@ public class Monkey2D : MonoBehaviour
 
         distances.Clear();
         ffPosStr = "";
-        player.transform.position = Vector3.up * p_height;
-        player.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 
         isEnd = true;
 
         isIntertrail = true;
 
         phase = Phases.begin;
+
+        firefly.SetActive(false);
     }
 
     public async void SendMarker(string mark, float time)

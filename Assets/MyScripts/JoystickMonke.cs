@@ -33,7 +33,8 @@ public class JoystickMonke : MonoBehaviour
     private float hbobCounter = 0;
     private float accelCounter = 0;
     private float decelCounter = 0;
-    
+    private float feedbackCounter = 0;
+
     //Frame rate
     private static readonly float frameRate = 90f;
 
@@ -57,8 +58,8 @@ public class JoystickMonke : MonoBehaviour
 
     private void FixedUpdate()
     {
-        moveX = -USBJoystick.x.ReadValue();
-        moveY = -USBJoystick.y.ReadValue();
+        moveX = 1;//-USBJoystick.x.ReadValue();
+        moveY = 0;//-USBJoystick.y.ReadValue();
 
         if (moveX < 0.0f)
         {
@@ -93,7 +94,34 @@ public class JoystickMonke : MonoBehaviour
         moveX = moveY;
         moveY = 1f;
 
-        if (Vector3.Distance(new Vector3(0f, 0f, 0f), transform.position) > SharedMonkey.FFMoveRadius || SharedMonkey.GFFPhaseFlag == 1
+
+
+        if (SharedMonkey.GFFPhaseFlag == 6)
+        //feedback
+        {
+            float SMspeed = 0.01f;//Mathf.Abs(SharedMonkey.SelfMotionSpeed / frameRate);
+            print(SMspeed);
+            Quaternion currentRotation = transform.rotation;
+            Vector3 player_vec = new Vector3(transform.position.x, 0, transform.position.z);
+            Vector3 FF_vec = new Vector3(SharedMonkey.firefly.transform.position.x, 0, SharedMonkey.firefly.transform.position.z);
+            float degree_score = Vector3.Angle(player_vec, FF_vec);
+            float degrees_to_rotate = 0;
+            if (SharedMonkey.GFFTrueRadians > circX)
+            {
+                SMspeed = -SMspeed;
+                degrees_to_rotate = 90 + degree_score / 2;
+            }
+            else
+            {
+                degrees_to_rotate = 90 - degree_score / 2;
+            }
+            if (feedbackCounter < degrees_to_rotate)
+            {
+                currentRotation.y += SMspeed;
+                transform.rotation = currentRotation;
+            }
+        }
+        else if (Vector3.Distance(new Vector3(0f, 0f, 0f), transform.position) > SharedMonkey.FFMoveRadius || SharedMonkey.GFFPhaseFlag == 1
             || SharedMonkey.GFFPhaseFlag == 2 || !SharedMonkey.selfmotiontrial && SharedMonkey.GFFPhaseFlag == 3)
         //Out of circle(Feedback) OR Preparation & Habituation & No selfmotion's Observation
         {
@@ -103,6 +131,7 @@ public class JoystickMonke : MonoBehaviour
             accelCounter = 0;
             decelCounter = 0;
             hbobCounter = 0;
+            feedbackCounter = 0;
             circX = 0;
         }
         else if (SharedMonkey.selfmotiontrial && SharedMonkey.GFFPhaseFlag == 2.5)

@@ -58,8 +58,8 @@ public class JoystickMonke : MonoBehaviour
 
     private void FixedUpdate()
     {
-        moveX = 1;//-USBJoystick.x.ReadValue();
-        moveY = 0;//-USBJoystick.y.ReadValue();
+        moveX = -USBJoystick.x.ReadValue();
+        moveY = -USBJoystick.y.ReadValue();
 
         if (moveX < 0.0f)
         {

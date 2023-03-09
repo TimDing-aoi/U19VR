@@ -47,7 +47,7 @@ public class GoToSettings : MonoBehaviour
             {
                 if (children.gameObject.CompareTag("Setting"))
                 {
-                    if (children.name == "RandomizedB")
+                    if (children.name == "RotationFeedback")
                     {
                         bool field = PlayerPrefs.GetInt(children.name) == 1;
                         UnityEngine.UI.Toggle toggle = children.GetComponent<UnityEngine.UI.Toggle>();
@@ -144,7 +144,7 @@ public class GoToSettings : MonoBehaviour
     {
         try
         {
-            if (obj.name == "RandomizedB")
+            if (obj.name == "RotationFeedback")
             {
                 PlayerPrefs.SetInt(obj.name, obj.GetComponent<UnityEngine.UI.Toggle>().isOn ? 1 : 0);
             }

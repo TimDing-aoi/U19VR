@@ -47,7 +47,7 @@ public class GoToSettings : MonoBehaviour
             {
                 if (children.gameObject.CompareTag("Setting"))
                 {
-                    if (children.name == "RandomizedB")
+                    if (children.name == "RotationFeedback")
                     {
                         bool field = PlayerPrefs.GetInt(children.name) == 1;
                         UnityEngine.UI.Toggle toggle = children.GetComponent<UnityEngine.UI.Toggle>();
@@ -79,27 +79,11 @@ public class GoToSettings : MonoBehaviour
             {
                 if (children.gameObject.CompareTag("Setting"))
                 {
-                    if (children.name == "RandomizedB")
+                    TMP_InputField field = children.GetComponent<TMP_InputField>();
+                    float LastValue = PlayerPrefs.GetFloat(children.name);
+                    if (field != null)
                     {
-                        bool field = PlayerPrefs.GetInt(children.name) == 1;
-                        UnityEngine.UI.Toggle toggle = children.GetComponent<UnityEngine.UI.Toggle>();
-                        toggle.isOn = field;
-                    }
-                    else
-                    if (children.name == "Path" || children.name == "Name" || children.name == "Date")
-                    {
-                        TMP_InputField field = children.GetComponent<TMP_InputField>();
-                        string LastValue = PlayerPrefs.GetString(children.name);
-                        field.text = LastValue;
-                    }
-                    else
-                    {
-                        TMP_InputField field = children.GetComponent<TMP_InputField>();
-                        float LastValue = PlayerPrefs.GetFloat(children.name);
-                        if (field != null)
-                        {
-                            field.text = LastValue.ToString();
-                        }
+                        field.text = LastValue.ToString();
                     }
                 }
             }
@@ -144,7 +128,7 @@ public class GoToSettings : MonoBehaviour
     {
         try
         {
-            if (obj.name == "RandomizedB")
+            if (obj.name == "RotationFeedback")
             {
                 PlayerPrefs.SetInt(obj.name, obj.GetComponent<UnityEngine.UI.Toggle>().isOn ? 1 : 0);
             }
@@ -230,7 +214,7 @@ public class GoToSettings : MonoBehaviour
                                 }
                             }
                         }
-                        else if (children.name == "RandomizedB")
+                        else if (children.name == "RotationFeedback")
                         {
                             UnityEngine.UI.Toggle toggle = children.GetComponent<UnityEngine.UI.Toggle>();
                             foreach (XmlNode node in doc.DocumentElement.ChildNodes)
@@ -261,6 +245,32 @@ public class GoToSettings : MonoBehaviour
                                     {
                                         PlayerPrefs.SetInt("Run Number", int.Parse(setting.InnerText));
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (Transform child in settingMenu2.transform)
+            {
+                foreach (Transform children in child)
+                {
+                    if (children.gameObject.CompareTag("Setting"))
+                    {
+                        TMP_InputField field = children.GetComponent<TMP_InputField>();
+                        foreach (XmlNode node in doc.DocumentElement.ChildNodes)
+                        {
+                            foreach (XmlNode setting in node.ChildNodes)
+                            {
+                                if (setting.Name == children.name.Replace(" ", ""))
+                                {
+                                    field.text = setting.InnerText;
+                                    PlayerPrefs.SetFloat(children.name, float.Parse(field.text));
+                                }
+                                else if (setting.Name == "RunNumber")
+                                {
+                                    PlayerPrefs.SetInt("Run Number", int.Parse(setting.InnerText));
                                 }
                             }
                         }

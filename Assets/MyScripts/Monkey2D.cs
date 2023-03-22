@@ -201,6 +201,7 @@ public class Monkey2D : MonoBehaviour
 
     // Rewarded?
     bool rewarded;
+    public bool trial_not_rewarded = true;
     readonly List<int> score = new List<int>();
 
     // Was Always ON?
@@ -886,6 +887,7 @@ public class Monkey2D : MonoBehaviour
 
         // Feedback
         GFFPhaseFlag = 6;
+        trial_not_rewarded = false;
         FeedbackStart.Add(Time.realtimeSinceStartup - programT0);
 
         rewarded = false;
@@ -972,6 +974,8 @@ public class Monkey2D : MonoBehaviour
             audioSource.Play();
 
             await new WaitForSeconds((juiceTime / 1000.0f) + 0.25f);
+
+            trial_not_rewarded = true;
         }
 
         score.Add(rewarded ? 1 : 0);
@@ -980,10 +984,17 @@ public class Monkey2D : MonoBehaviour
         cPos.Add(ffPosStr = string.Format("{0},{1},{2}", -pos.z, pos.y, pos.x));
         cRot.Add(rot.ToString("F5").Trim(toTrim).Replace(" ", ""));
 
-
         float wait = PlayerPrefs.GetFloat("ITIduration");
-        currPhase = Phases.ITI;
+        float feedback = PlayerPrefs.GetFloat("FeedbackDuration");
+        if (trial_not_rewarded)
+        {
+            firefly.SetActive(true);
+            await new WaitForSeconds(feedback);
+            firefly.SetActive(false);
+            trial_not_rewarded = false;
+        }
         await new WaitForSeconds(wait);
+        currPhase = Phases.ITI;
         interWait.Add(wait);
 
         distances.Clear();
@@ -994,8 +1005,6 @@ public class Monkey2D : MonoBehaviour
         isIntertrail = true;
 
         phase = Phases.begin;
-
-        firefly.SetActive(false);
     }
 
     public async void SendMarker(string mark, float time)

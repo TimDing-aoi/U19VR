@@ -58,8 +58,8 @@ public class JoystickMonke : MonoBehaviour
 
     private void FixedUpdate()
     {
-        moveX = 1;//-USBJoystick.x.ReadValue();
-        moveY = 0;//-USBJoystick.y.ReadValue();
+        moveX = -USBJoystick.x.ReadValue();
+        moveY = -USBJoystick.y.ReadValue();
 
         if (moveX < 0.0f)
         {
@@ -96,32 +96,16 @@ public class JoystickMonke : MonoBehaviour
 
 
 
-        if (SharedMonkey.GFFPhaseFlag == 6)
+        if (SharedMonkey.GFFPhaseFlag == 6 && SharedMonkey.trial_not_rewarded)
         //feedback
         {
-            float SMspeed = 0.01f;//Mathf.Abs(SharedMonkey.SelfMotionSpeed / frameRate);
-            print(SMspeed);
-            Quaternion currentRotation = transform.rotation;
-            Vector3 player_vec = new Vector3(transform.position.x, 0, transform.position.z);
-            Vector3 FF_vec = new Vector3(SharedMonkey.firefly.transform.position.x, 0, SharedMonkey.firefly.transform.position.z);
-            float degree_score = Vector3.Angle(player_vec, FF_vec);
-            float degrees_to_rotate = 0;
-            if (SharedMonkey.GFFTrueRadians > circX)
-            {
-                SMspeed = -SMspeed;
-                degrees_to_rotate = 90 + degree_score / 2;
-            }
-            else
-            {
-                degrees_to_rotate = 90 - degree_score / 2;
-            }
-            if (feedbackCounter < degrees_to_rotate)
-            {
-                currentRotation.y += SMspeed;
-                transform.rotation = currentRotation;
-            }
+            float RotationFeedback = 2f;
+            var lookPos = SharedMonkey.firefly.transform.position - transform.position;
+            lookPos.y = 0;
+            var rotation = Quaternion.LookRotation(lookPos);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * RotationFeedback);
         }
-        else if (Vector3.Distance(new Vector3(0f, 0f, 0f), transform.position) > SharedMonkey.FFMoveRadius || SharedMonkey.GFFPhaseFlag == 1
+        else if (SharedMonkey.GFFPhaseFlag == 1
             || SharedMonkey.GFFPhaseFlag == 2 || !SharedMonkey.selfmotiontrial && SharedMonkey.GFFPhaseFlag == 3)
         //Out of circle(Feedback) OR Preparation & Habituation & No selfmotion's Observation
         {

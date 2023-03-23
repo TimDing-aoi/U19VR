@@ -989,7 +989,10 @@ public class Monkey2D : MonoBehaviour
         if (trial_not_rewarded)
         {
             firefly.SetActive(true);
-            await new WaitForSeconds(feedback);
+            if(feedback != 0)
+            {
+                await new WaitForSeconds(feedback);
+            }
             firefly.SetActive(false);
             trial_not_rewarded = false;
         }

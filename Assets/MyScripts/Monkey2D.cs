@@ -768,6 +768,12 @@ public class Monkey2D : MonoBehaviour
         float CompensationTime1 = (float)((ActionTime / CycleTimes) * CompensationRatioFirstHalf);
         float CompensationTime2;
         CycleShift.Add(CompensationTime1);
+        float RatioBlink = PlayerPrefs.GetFloat("RatioBlink");
+        bool BlinkTrial = false;
+        if (!AlwaysOntrial)
+        {
+            BlinkTrial = rand.NextDouble() <= (RatioBlink/(1-ratioAlwaysOn));    
+        }
 
         if (AlwaysOntrial)
         {
@@ -775,7 +781,7 @@ public class Monkey2D : MonoBehaviour
             await new WaitForSeconds(ActionTime);
             await new WaitForSeconds(SecondObservation);
         }
-        else if (CycleTimes > 0)
+        else if (CycleTimes > 0 && BlinkTrial)
         {
             float FFoffCompansation1 = 0;
             float FFonCompansation1 = 0;

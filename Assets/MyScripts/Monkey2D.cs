@@ -1157,7 +1157,7 @@ public class Monkey2D : MonoBehaviour
                     line += string.Format(",0,");
                 }
 
-                line += string.Format(",{0},", blinking[i]);
+                line += string.Format("{0},", blinking[i]);
 
                 csvDisc.AppendLine(line);
 

@@ -188,6 +188,7 @@ public class Monkey2D : MonoBehaviour
     readonly List<float> SelfReportStart = new List<float>();
     readonly List<float> FeedbackStart = new List<float>();
     readonly List<float> CycleShift = new List<float>();
+    readonly List<float> blinking = new List<float>();
     [HideInInspector] public float programT0 = 0.0f;
 
     //Timeline times, in seconds
@@ -772,7 +773,19 @@ public class Monkey2D : MonoBehaviour
         bool BlinkTrial = false;
         if (!AlwaysOntrial)
         {
-            BlinkTrial = rand.NextDouble() <= (RatioBlink/(1-ratioAlwaysOn));    
+            BlinkTrial = rand.NextDouble() <= (RatioBlink/(1-ratioAlwaysOn));
+            if (BlinkTrial)
+            {
+                blinking.Add(1);
+            }
+            else
+            {
+                blinking.Add(0);
+            }
+        }
+        else
+        {
+            blinking.Add(2);
         }
 
         if (AlwaysOntrial)
@@ -1059,7 +1072,7 @@ public class Monkey2D : MonoBehaviour
             StringBuilder csvDisc = new StringBuilder();
             firstLine = "n,max_v,max_w,ffv,onDuration,Answer,PosX0,PosY0,PosZ0,RotX0,RotY0,RotZ0,RotW0,ffX,ffY,ffZ,pCheckX,pCheckY,pCheckZ,rCheckX,rCheckY,rCheckZ,rCheckW,distToFF,rewarded,timeout," +
                 "beginTime,checkTime,duration,delays,ITI,endTime,PrepStart,HabituStart,ObservStart,ActionStart,ReportStart,FeedbackStart,CIScore,JuiceDuration,RewardTime," +
-                "TrialSelfMotionSpeed,Selfmotion,ObservCondition,CycleShift,"
+                "TrialSelfMotionSpeed,Selfmotion,ObservCondition,CycleShift,BlinkingTrialType"
             + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3");
             csvDisc.AppendLine(firstLine);
 
@@ -1089,7 +1102,8 @@ public class Monkey2D : MonoBehaviour
                 FeedbackStart.Count,
                 CIScores.Count,
                 juiceDuration.Count,
-                rewardTime.Count
+                rewardTime.Count,
+                blinking.Count
             };
             
             if (isFlashing)
@@ -1138,6 +1152,12 @@ public class Monkey2D : MonoBehaviour
                 {
                     line += string.Format(",{0},", CycleShift[i]);
                 }
+                else
+                {
+                    line += string.Format(",0,");
+                }
+
+                line += string.Format(",{0},", blinking[i]);
 
                 csvDisc.AppendLine(line);
 

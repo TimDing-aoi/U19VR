@@ -1289,6 +1289,10 @@ public class Monkey2D : MonoBehaviour
 
         xmlWriter.WriteStartElement("Ratio");
         xmlWriter.WriteString(PlayerPrefs.GetFloat("Ratio").ToString());
+        xmlWriter.WriteEndElement(); 
+        
+        xmlWriter.WriteStartElement("RatioBlink");
+        xmlWriter.WriteString(PlayerPrefs.GetFloat("RatioBlink").ToString());
         xmlWriter.WriteEndElement();
 
         xmlWriter.WriteStartElement("FFmoveradius");

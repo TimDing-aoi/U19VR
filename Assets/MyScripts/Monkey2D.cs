@@ -120,6 +120,7 @@ public class Monkey2D : MonoBehaviour
     [HideInInspector] public Phases phase;
     [HideInInspector] public Phases currPhase;
     private bool isBegin = false;
+    private bool isAction = false;
     private bool isCheck = false;
     private bool isEnd = false;
     public bool isIntertrail = false;
@@ -506,6 +507,8 @@ public class Monkey2D : MonoBehaviour
             playing = false;
 
             Save();
+
+            //Block end marker
             SendMarker("x", 1000.0f);
 
             juiceBox.Close();
@@ -516,7 +519,17 @@ public class Monkey2D : MonoBehaviour
         if (isBegin)
         {
             isBegin = false;
+
+            //Trial start marker
             SendMarker("s", 1000.0f);
+        }
+
+        if (isAction)
+        {
+            isAction = false;
+
+            //Action start marker
+            SendMarker("p", 1000.0f);
         }
 
         if (isCheck)
@@ -528,6 +541,8 @@ public class Monkey2D : MonoBehaviour
         if (isEnd)
         {
             isEnd = false;
+
+            //Trial end marker
             SendMarker("e", 1000.0f);
         }
         SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
@@ -750,6 +765,7 @@ public class Monkey2D : MonoBehaviour
         await new WaitForSeconds(downdur);
 
         //Action
+        isAction = true;
         GFFPhaseFlag = 4;
         t1_acc = Time.time;//Action phase begin time
         ActionStart.Add(Time.realtimeSinceStartup - programT0);

@@ -21,7 +21,14 @@ namespace BgTools.PlayerPrefsEditor
 #region ErrorValues
         private readonly int ERROR_VALUE_INT = int.MinValue;
         private readonly string ERROR_VALUE_STR = "<bgTool_error_24072017>";
-#endregion //ErrorValues
+        #endregion //ErrorValues
+
+        private enum PreferencesEntrySortOrder
+        {
+            None = 0,
+            Asscending = 1,
+            Descending = 2
+        }
 
         private static string pathToPrefs = String.Empty;
         private static string platformPathPrefix = @"~";
@@ -29,6 +36,8 @@ namespace BgTools.PlayerPrefsEditor
         private string[] userDef;
         private string[] unityDef;
         private bool showSystemGroup = false;
+
+        private PreferencesEntrySortOrder sortOrder = PreferencesEntrySortOrder.None;
 
         private SerializedObject serializedObject;
         private ReorderableList userDefList;
@@ -44,7 +53,7 @@ namespace BgTools.PlayerPrefsEditor
 
         private PreferanceStorageAccessor entryAccessor;
 
-        private SearchField searchfield;
+        private MySearchField searchfield;
         private string searchTxt;
         private int loadingSpinnerFrame;
 
@@ -96,7 +105,9 @@ namespace BgTools.PlayerPrefsEditor
             if(monitoring)
                 entryAccessor.StartMonitoring();
 
-            searchfield = new SearchField();
+            sortOrder = (PreferencesEntrySortOrder) EditorPrefs.GetInt("BGTools.PlayerPrefsEditor.SortOrder", 0);
+            searchfield = new MySearchField();
+            searchfield.DropdownSelectionDelegate = () => { PrepareData(); };
 
             // Fix for serialisation issue of static fields
             if (userDefList == null)
@@ -395,6 +406,34 @@ namespace BgTools.PlayerPrefsEditor
                 GUILayout.FlexibleSpace();
 
                 EditorGUIUtility.SetIconSize(new Vector2(14.0f, 14.0f));
+
+                GUIContent sortOrderContent;
+                switch (sortOrder)
+                {
+                    case PreferencesEntrySortOrder.Asscending:
+                        sortOrderContent = new GUIContent(ImageManager.SortAsscending, "Ascending sorted");
+                        break;
+                    case PreferencesEntrySortOrder.Descending:
+                        sortOrderContent = new GUIContent(ImageManager.SortDescending, "Descending sorted");
+                        break;
+                    case PreferencesEntrySortOrder.None:
+                    default:
+                        sortOrderContent = new GUIContent(ImageManager.SortDisabled, "Not sorted");
+                        break;
+                }
+
+                if (GUILayout.Button(sortOrderContent, EditorStyles.toolbarButton))
+                {
+                    
+                    sortOrder++;
+                    if((int) sortOrder >= Enum.GetValues(typeof(PreferencesEntrySortOrder)).Length)
+                    {
+                        sortOrder = 0;
+                    }
+                    EditorPrefs.SetInt("BGTools.PlayerPrefsEditor.SortOrder", (int) sortOrder);
+                    PrepareData(false);
+                }
+
                 GUIContent watcherContent = (entryAccessor.IsMonitoring()) ? new GUIContent(ImageManager.Watching, "Watching changes") : new GUIContent(ImageManager.NotWatching, "Not watching changes");
                 if (GUILayout.Button(watcherContent, EditorStyles.toolbarButton))
                 {
@@ -484,18 +523,18 @@ namespace BgTools.PlayerPrefsEditor
 
             LoadKeys(out userDef, out unityDef, reloadKeys);
 
-            CreatePrefEntries(userDef, prefEntryHolder.userDefList);
-            CreatePrefEntries(unityDef, prefEntryHolder.unityDefList);
+            CreatePrefEntries(userDef, ref prefEntryHolder.userDefList);
+            CreatePrefEntries(unityDef, ref prefEntryHolder.unityDefList);
 
             // Clear cache
             userDefListCache = new SerializedProperty[prefEntryHolder.userDefList.Count];
         }
 
-        private void CreatePrefEntries(string[] keySource, List<PreferenceEntry> listDest)
+        private void CreatePrefEntries(string[] keySource, ref List<PreferenceEntry> listDest)
         {
-            if (!string.IsNullOrEmpty(searchTxt))
+            if (!string.IsNullOrEmpty(searchTxt) && searchfield.SearchMode == MySearchField.SearchModePreferencesEditorWindow.Key)
             {
-                keySource = keySource.Where((a) => a.ToLower().Contains(searchTxt.ToLower())).ToArray();
+                keySource = keySource.Where((keyEntry) => keyEntry.ToLower().Contains(searchTxt.ToLower())).ToArray();
             }
 
             foreach (string key in keySource)
@@ -530,6 +569,21 @@ namespace BgTools.PlayerPrefsEditor
                     listDest.Add(entry);
                     continue;
                 }
+            }
+
+            if (!string.IsNullOrEmpty(searchTxt) && searchfield.SearchMode == MySearchField.SearchModePreferencesEditorWindow.Value)
+            {
+                listDest = listDest.Where((preferenceEntry) => preferenceEntry.ValueAsString().ToLower().Contains(searchTxt.ToLower())).ToList<PreferenceEntry>();
+            }
+
+            switch(sortOrder)
+            {
+                case PreferencesEntrySortOrder.Asscending:
+                    listDest.Sort((PreferenceEntry x, PreferenceEntry y) => { return x.m_key.CompareTo(y.m_key); });
+                    break;
+                case PreferencesEntrySortOrder.Descending:
+                    listDest.Sort((PreferenceEntry x, PreferenceEntry y) => { return y.m_key.CompareTo(x.m_key); });
+                    break;
             }
         }
 
@@ -583,4 +637,64 @@ namespace BgTools.PlayerPrefsEditor
         }
 #endif
     }
+}
+
+public class MySearchField : SearchField
+{
+    public enum SearchModePreferencesEditorWindow { Key, Value }
+
+    public SearchModePreferencesEditorWindow SearchMode { get; private set; }
+
+    public Action DropdownSelectionDelegate;
+
+    public new string OnGUI(
+        Rect rect,
+        string text,
+        GUIStyle style,
+        GUIStyle cancelButtonStyle,
+        GUIStyle emptyCancelButtonStyle)
+    {
+        style.padding.left = 17;
+        Rect ContextMenuRect = new Rect(rect.x, rect.y, 10, rect.height);
+
+        // Add interactive area
+        EditorGUIUtility.AddCursorRect(ContextMenuRect, MouseCursor.Text);
+        if (Event.current.type == EventType.MouseDown && ContextMenuRect.Contains(Event.current.mousePosition))
+        {
+            void OnDropdownSelection(object parameter)
+            {
+                SearchMode = (SearchModePreferencesEditorWindow) Enum.Parse(typeof(SearchModePreferencesEditorWindow), parameter.ToString());
+                DropdownSelectionDelegate();
+            }
+
+            GenericMenu menu = new GenericMenu();
+            foreach(SearchModePreferencesEditorWindow EnumIt in Enum.GetValues(typeof(SearchModePreferencesEditorWindow)))
+            {
+                String EnumName = Enum.GetName(typeof(SearchModePreferencesEditorWindow), EnumIt);
+                menu.AddItem(new GUIContent(EnumName), SearchMode == EnumIt, OnDropdownSelection, EnumName);
+            }
+
+            menu.DropDown(rect);
+        }
+
+        // Render original search field
+        String result = base.OnGUI(rect, text, style, cancelButtonStyle, emptyCancelButtonStyle);
+
+        // Render additional images
+        GUIStyle ContexMenuOverlayStyle = GUIStyle.none;
+        ContexMenuOverlayStyle.contentOffset = new Vector2(9, 5);
+        GUI.Box(new Rect(rect.x, rect.y, 5, 5), EditorGUIUtility.IconContent("d_ProfilerTimelineDigDownArrow@2x"), ContexMenuOverlayStyle);
+
+        if (!HasFocus() && String.IsNullOrEmpty(text))
+        {
+            GUI.enabled = false;
+            GUI.Label(new Rect(rect.x + 14, rect.y, 40, rect.height), Enum.GetName(typeof(SearchModePreferencesEditorWindow), SearchMode));
+            GUI.enabled = true;
+        }
+        ContexMenuOverlayStyle.contentOffset = new Vector2();
+        return result;
+    }
+
+    public new string OnToolbarGUI(string text, params GUILayoutOption[] options) => this.OnToolbarGUI(GUILayoutUtility.GetRect(29f, 200f, 18f, 18f, EditorStyles.toolbarSearchField, options), text);
+    public new string OnToolbarGUI(Rect rect, string text) => this.OnGUI(rect, text, EditorStyles.toolbarSearchField, EditorStyles.toolbarButton, EditorStyles.toolbarButton);
 }

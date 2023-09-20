@@ -122,6 +122,7 @@ public class Monkey2D : MonoBehaviour
     private bool isStart = true;
     private bool isBegin = false;
     private bool isAction = false;
+    private bool isObservation = false;
     private bool isCheck = false;
     private bool isJuice = false;
     private bool isEnd = false;
@@ -547,6 +548,15 @@ public class Monkey2D : MonoBehaviour
             Marker = 8;
         }
 
+        else if (isObservation)
+        {
+            isObservation = false;
+
+            //Observation start marker
+            SendMarker("v", 1000.0f);
+            Marker = 16;
+        }
+
         else if (isJuice)
         {
             isJuice = false;
@@ -725,6 +735,7 @@ public class Monkey2D : MonoBehaviour
 
         // Observation
         GFFPhaseFlag = 3;
+        isObservation = true;
 
         //Firefly Generation
         System.Random randNoise = new System.Random();

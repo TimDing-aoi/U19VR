@@ -522,7 +522,7 @@ public class Monkey2D : MonoBehaviour
 
             //Block end marker
             SendMarker("x", 1000.0f);
-            Marker = 2;
+            Marker = 17;
 
             juiceBox.Close();
 
@@ -535,7 +535,7 @@ public class Monkey2D : MonoBehaviour
 
             //Trial start marker
             SendMarker("s", 1000.0f);
-            Marker = 3;
+            Marker = 2;
         }
 
         else if (isAction)
@@ -544,13 +544,13 @@ public class Monkey2D : MonoBehaviour
 
             //Action start marker
             SendMarker("p", 1000.0f);
-            Marker = 4;
+            Marker = 8;
         }
 
         else if (isJuice)
         {
             isJuice = false;
-            Marker = 6;
+            Marker = 4;
         }
 
         else if (isCheck)
@@ -565,7 +565,7 @@ public class Monkey2D : MonoBehaviour
 
             //Trial end marker
             SendMarker("e", 1000.0f);
-            Marker = 5;
+            Marker = 3;
         }
 
         else

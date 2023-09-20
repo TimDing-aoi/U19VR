@@ -119,9 +119,11 @@ public class Monkey2D : MonoBehaviour
     //Phase trackers
     [HideInInspector] public Phases phase;
     [HideInInspector] public Phases currPhase;
+    private bool isStart = true;
     private bool isBegin = false;
     private bool isAction = false;
     private bool isCheck = false;
+    private bool isJuice = false;
     private bool isEnd = false;
     public bool isIntertrail = false;
 
@@ -235,6 +237,10 @@ public class Monkey2D : MonoBehaviour
 
     //Meta Data file for each trial
     readonly List<string> MetaData = new List<string>();
+
+    //Markers Being Sent
+    public int Marker = 1;
+
     /// <summary>
     /// When the stimulus is activated
     /// </summary>
@@ -248,8 +254,6 @@ public class Monkey2D : MonoBehaviour
         //Juice port
         juiceBox = serial.sp;
 
-        //Send Block Start Marker
-        SendMarker("f", 1000.0f);
         programT0 = Time.realtimeSinceStartup;
 
         //VR set up
@@ -502,7 +506,15 @@ public class Monkey2D : MonoBehaviour
     public void FixedUpdate()
     {
         var keyboard = Keyboard.current;
-        if ((keyboard.enterKey.isPressed || trialNum >= ntrials) && playing)
+        if (isStart)
+        {
+            isStart = false;
+            //Send Block Start Marker
+            SendMarker("f", 1000.0f);
+            Marker = 1;
+        }
+
+        else if ((keyboard.enterKey.isPressed || trialNum >= ntrials) && playing)
         {
             playing = false;
 
@@ -510,41 +522,57 @@ public class Monkey2D : MonoBehaviour
 
             //Block end marker
             SendMarker("x", 1000.0f);
+            Marker = 2;
 
             juiceBox.Close();
 
             SceneManager.LoadScene("MainMenu");
         }
 
-        if (isBegin)
+        else if (isBegin)
         {
             isBegin = false;
 
             //Trial start marker
             SendMarker("s", 1000.0f);
+            Marker = 3;
         }
 
-        if (isAction)
+        else if (isAction)
         {
             isAction = false;
 
             //Action start marker
             SendMarker("p", 1000.0f);
+            Marker = 4;
         }
 
-        if (isCheck)
+        else if (isJuice)
+        {
+            isJuice = false;
+            Marker = 6;
+        }
+
+        else if (isCheck)
         {
             isCheck = false;
             checkTime.Add(Time.realtimeSinceStartup - programT0);
         }
 
-        if (isEnd)
+        else if (isEnd)
         {
             isEnd = false;
 
             //Trial end marker
             SendMarker("e", 1000.0f);
+            Marker = 5;
         }
+
+        else
+        {
+            Marker = 0;
+        }
+
         SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
         bool FF_Fully_Visible = FFcr.materials[0].color == new Color(1f, 1f, 1f, 1f);
         if (PlayerPrefs.GetFloat("calib") == 0)
@@ -994,6 +1022,7 @@ public class Monkey2D : MonoBehaviour
             audioSource.Play();
 
             points++;
+            isJuice = true;
             SendMarker("j", juiceTime);
 
             await new WaitForSeconds((juiceTime / 1000.0f) + 0.25f);

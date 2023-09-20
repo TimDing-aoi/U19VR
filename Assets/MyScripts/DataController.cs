@@ -223,7 +223,7 @@ namespace PupilLabs
                     Vector3 fake_location = new Vector3(-999f, -999f, -999f);
                     SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
                     bool FF_Fully_Visible = FFcr.materials[0].color == new Color(1f, 1f, 1f, 1f);
-                    sbPacket = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29}\n",
+                    sbPacket = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29},{30}\n",
                         SharedMonkey.trialNum,
                         Time.realtimeSinceStartup,
                         (int)SharedMonkey.currPhase,
@@ -253,7 +253,8 @@ namespace PupilLabs
                         gazeDataNow.EyeCenter0.ToString("F5").Trim('(', ')').Replace(" ", ""),
                         gazeDataNow.EyeCenter1.ToString("F5").Trim('(', ')').Replace(" ", ""),
                         gazeDataNow.GazeNormal0.ToString("F5").Trim('(', ')').Replace(" ", ""),
-                        gazeDataNow.GazeNormal1.ToString("F5").Trim('(', ')').Replace(" ", ""));
+                        gazeDataNow.GazeNormal1.ToString("F5").Trim('(', ')').Replace(" ", ""),
+                        SharedMonkey.Marker);
                     sb.Append(sbPacket);
 #endif
                 }
@@ -311,7 +312,7 @@ namespace PupilLabs
 
                 string firstLine = "TrialNum,TrialTime,BackendPhase,OnOff,PosX,PosY,PosZ,RotX,RotY,RotZ,RotW,CleanLinearVelocity,CleanAngularVelocity,FFX,FFY,FFZ,FFV/linear,GazeX,GazeY,GazeZ,GazeX0,GazeY0,GazeZ0,HitX,HitY,HitZ,GazeDist," +
                 "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX," +
-                "Confidence,CenterRX,CenterRY,CenterRZ,CenterLX,CenterLY,CenterLZ,NormRX,NormRY,NormRZ,NormLX,NormLY,NormLZ";
+                "Confidence,CenterRX,CenterRY,CenterRZ,CenterLX,CenterLY,CenterLZ,NormRX,NormRY,NormRZ,NormLX,NormLY,NormLZ,Marker";
                 sb.Append(firstLine + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetString("Date") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
 
                 timeSync.UpdateTimeSync();

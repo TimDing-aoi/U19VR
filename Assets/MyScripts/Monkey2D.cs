@@ -399,7 +399,18 @@ public class Monkey2D : MonoBehaviour
         drawLine(FFMoveRadius, 200);
 
         path = PlayerPrefs.GetString("Path");
+        // Check if the path is valid
+        if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
+        {
+            // Set to the default folder if path is invalid
+            path = "C:/Users/lab/Desktop/DisentangledPath";
 
+            // Create the directory if it does not exist
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+        }
         //Experiment Set up
         trialNum = 0;
         currPhase = Phases.begin;
@@ -410,7 +421,7 @@ public class Monkey2D : MonoBehaviour
         player.transform.rotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 
         //If not using eye tracker
-        if (PlayerPrefs.GetFloat("calib") == 0)
+        //if (PlayerPrefs.GetFloat("calib") == 0) // Revising to add the first row. Sorry Valentina!
         {
             string firstLine = "TrialNum,TrialTime,BackendPhase,OnOff,PosX,PosY,PosZ,RotX,RotY,RotZ,RotW,CleanLinearVelocity,CleanAngularVelocity,FFX,FFY,FFZ,FFV/linear,GazeX,GazeY,GazeZ,GazeX0,GazeY0,GazeZ0,HitX,HitY,HitZ,ConvergeDist," +
                 "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX,";
@@ -585,7 +596,7 @@ public class Monkey2D : MonoBehaviour
 
         SpriteRenderer FFcr = firefly.GetComponent<SpriteRenderer>();
         bool FF_Fully_Visible = FFcr.materials[0].color == new Color(1f, 1f, 1f, 1f);
-        if (PlayerPrefs.GetFloat("calib") == 0)
+        //if (PlayerPrefs.GetFloat("calib") == 0) // even though calibration is not done, make a heading and append sb
         {
             string transformedFFPos = new Vector3(-firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x).ToString("F8").Trim(toTrim).Replace(" ", "");
             Vector3 fake_location = new Vector3(-999f, -999f, -999f);
@@ -1112,6 +1123,17 @@ public class Monkey2D : MonoBehaviour
         return (float)(rand.NextDouble() * (max - min) + min);
     }
 
+    void OnApplicationQuit() // Saving the data, whenever the program is termintated by any how.
+    {
+        Save();
+        // I am not sure wheter the below will be executed or not, but copying the original code
+        SendMarker("x", 1000.0f);
+        Marker = 17;
+
+        juiceBox.Close();
+
+        Destroy(this);
+    }
     /// <summary>
     /// Data Saving.
     /// </summary>
@@ -1223,11 +1245,11 @@ public class Monkey2D : MonoBehaviour
 
             File.WriteAllText(discPath, csvDisc.ToString());
 
-            if (PlayerPrefs.GetFloat("calib") == 0)
-            {
+            //if (PlayerPrefs.GetFloat("calib") == 0) // Even the calibration was not done, the behavior data should be saved
+            //{
                 string contpath = path + "/continuous_data_" + PlayerPrefs.GetString("Name") + "_" + DateTime.Today.ToString("MMddyyyy") + "_" + PlayerPrefs.GetInt("Run Number").ToString("D3") + ".txt";
                 File.AppendAllText(contpath, sb.ToString());
-            }
+            //}
 
             PlayerPrefs.SetFloat("Good Trials", totalScore);
             PlayerPrefs.SetInt("Total Trials", n.Count);

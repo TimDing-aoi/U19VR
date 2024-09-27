@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
 using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -185,6 +186,8 @@ namespace PupilLabs
         public AudioSource AudioSource;
         public AudioClip StimuTest;
 
+        float MarkerSeperationMultiplier = 1;
+
         void OnEnable()
         {
             runNumber = PlayerPrefs.GetInt("Fusion Run Number");
@@ -219,6 +222,10 @@ namespace PupilLabs
 
             TotalTrials = PlayerPrefs.GetFloat("StimNumTrials");
 
+            if (PlayerPrefs.GetFloat("MarkerSeperationMultiplier") != 0)
+            {
+                MarkerSeperationMultiplier = PlayerPrefs.GetFloat("MarkerSeperationMultiplier");
+            }
             sizeX = scale * xThreshold;
             sizeY = scale * yThreshold;
 
@@ -455,6 +462,21 @@ namespace PupilLabs
                 {
                     window.transform.position = previewMarkers[targetIdx].transform.position;
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                PlayerPrefs.SetFloat("MarkerSeperationMultiplier", MarkerSeperationMultiplier + 0.1f);
+            }
+            else if (Input.GetKeyUp(KeyCode.DownArrow))
+            {
+                PlayerPrefs.SetFloat("MarkerSeperationMultiplier", MarkerSeperationMultiplier - 0.1f);
+            }
+
+            if (PlayerPrefs.GetFloat("MarkerSeperationMultiplier") != 0)
+            {
+                MarkerSeperationMultiplier = PlayerPrefs.GetFloat("MarkerSeperationMultiplier");
+                UpdatePreviewMarkers();
             }
         }
 
@@ -1258,7 +1280,7 @@ namespace PupilLabs
                 var target = targets.GetLocalTargetPosAt(i);
                 var previewMarker = Instantiate<GameObject>(marker.gameObject);
                 previewMarker.transform.parent = previewMarkerParent.transform;
-                previewMarker.transform.localPosition = target;
+                previewMarker.transform.localPosition = target * MarkerSeperationMultiplier;
                 //previewMarker.transform.LookAt(camera.transform.position);
                 previewMarker.SetActive(true);
                 previewMarkers.Add(previewMarker);
@@ -1273,7 +1295,7 @@ namespace PupilLabs
             {
                 var target = targets.GetLocalTargetPosAt(i) * scale;
                 previewMarkers[i].transform.localScale = Vector3.one * markerSize * scale;
-                previewMarkers[i].transform.localPosition = new Vector3(target.x, target.y, scale);
+                previewMarkers[i].transform.localPosition = new Vector3(target.x * MarkerSeperationMultiplier, target.y * MarkerSeperationMultiplier, scale);
             }
         }
 

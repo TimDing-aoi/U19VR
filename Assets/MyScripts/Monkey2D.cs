@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using static JoystickMonke;
 using static Serial;
+using static SyncController; // Added for synchronization
 using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.XR;
@@ -230,6 +231,10 @@ public class Monkey2D : MonoBehaviour
     private Task currentTask;
     private bool playing = true;
 
+    // Synchronization script
+    List<int> TTL = new List<int>();
+    int sync_ttl = 0;
+
     //Juice Port
     SerialPort juiceBox;
 
@@ -245,6 +250,19 @@ public class Monkey2D : MonoBehaviour
     /// <summary>
     /// When the stimulus is activated
     /// </summary>
+    /// 
+    void Start()
+    {
+        try
+        {
+            sync_ttl = syncController.TTL;
+        }
+        catch
+        {
+            print("Sync arduino is not connected");
+        }
+
+    }
     void OnEnable()
     {
         //Run in background and clear cache
@@ -424,7 +442,7 @@ public class Monkey2D : MonoBehaviour
         //if (PlayerPrefs.GetFloat("calib") == 0) // Revising to add the first row. Sorry Valentina!
         {
             string firstLine = "TrialNum,TrialTime,BackendPhase,OnOff,PosX,PosY,PosZ,RotX,RotY,RotZ,RotW,CleanLinearVelocity,CleanAngularVelocity,FFX,FFY,FFZ,FFV/linear,GazeX,GazeY,GazeZ,GazeX0,GazeY0,GazeZ0,HitX,HitY,HitZ,ConvergeDist," +
-                "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX,";
+                "LeftPupilDiam,RightPupilDiam,LeftOpen,RightOpen,CIFFPhase,FFTrueLocationDegree,FFnoiseDegree,frameCounter,FFV/degrees,SelfMotionSpeed,RawJstX,RawJstY,CircX,TTL,"; // TTL is the last column
             sb.Append(firstLine + PlayerPrefs.GetString("Name") + "," + PlayerPrefs.GetInt("Run Number").ToString("D3") + "\n");
         }
     }
@@ -505,6 +523,16 @@ public class Monkey2D : MonoBehaviour
             if (currentTask.IsFaulted)
             {
                 print(currentTask.Exception);
+            }
+
+            try
+            {
+                sync_ttl = syncController.TTL;
+            }
+            catch
+            {
+                //print("Sync TTL is not sending signal");
+                sync_ttl = -1;
             }
         }
     }
@@ -600,7 +628,7 @@ public class Monkey2D : MonoBehaviour
         {
             string transformedFFPos = new Vector3(-firefly.transform.position.z, firefly.transform.position.y, firefly.transform.position.x).ToString("F8").Trim(toTrim).Replace(" ", "");
             Vector3 fake_location = new Vector3(-999f, -999f, -999f);
-            sb.Append(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24}\n",
+            sb.Append(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25}\n",
                    trialNum,
                    Time.realtimeSinceStartup,
                    (int)currPhase,
@@ -625,7 +653,8 @@ public class Monkey2D : MonoBehaviour
                    SelfMotionSpeed,
                    SharedJoystick.rawX,
                    SharedJoystick.rawY,
-                   SharedJoystick.circX * Mathf.Rad2Deg));
+                   SharedJoystick.circX * Mathf.Rad2Deg,
+                   sync_ttl));
         }
     }
 

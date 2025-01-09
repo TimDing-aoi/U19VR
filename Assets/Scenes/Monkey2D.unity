@@ -1527,9 +1527,9 @@ MonoBehaviour:
   fireflySize: 0
   lifeSpan: 0
   ratioAlwaysOn: 0
+  Ratio2Obs: 0
   ratio2Obs: 0
   FFMoveRadius: 0
-  FFRewardRadius: 0
   audioSource: {fileID: 1242841534}
   winSound: {fileID: 8300000, guid: d01ce912f50755444a9f23f0abad0d69, type: 3}
   neutralSound: {fileID: 8300000, guid: b942764ea8e94bf48b529d8da7892bc0, type: 3}
@@ -1537,6 +1537,7 @@ MonoBehaviour:
   selfmotiontrial: 0
   AlwaysOntrial: 0
   DoubleObservtrial: 0
+  isFFMoving: 0
   velocity: 0
   noise_SD: 0
   velocity_Noised: 0
@@ -1550,6 +1551,7 @@ MonoBehaviour:
   FFnoise: 0
   GFFTrueDegree: 0
   SelfMotionSpeed: 0
+  GFFTrueRadians: 0
   trialNum: 0
   player_origin: {x: 0, y: 0, z: 0}
   programT0: 0
@@ -1559,10 +1561,9 @@ MonoBehaviour:
   habituation_2: 0.2
   habituation_3: 0.05
   observation: 0.3
-  feedback: 0.5
-  preparation_total: 0.3
-  habituation_total: 0.35
+  trial_not_rewarded: 1
   points: 0
+  Marker: 1
 --- !u!114 &1242841537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1668,6 +1669,56 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 3311308389968972412}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1806206037
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1806206039}
+  - component: {fileID: 1806206038}
+  m_Layer: 0
+  m_Name: SyncController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1806206038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806206037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd7e1c8c15a7a284eb0e511542748f25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  portName: COM4
+  baudRate: 2000000
+  ReadTimeout: 5000
+  QueueLength: 1
+  TTL: 0
+  IsConnected: 1
+  updatesCounter: 0
+--- !u!4 &1806206039
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806206037}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!21 &1904016862
 Material:
   serializedVersion: 6

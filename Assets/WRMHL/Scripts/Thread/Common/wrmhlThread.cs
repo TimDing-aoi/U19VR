@@ -26,7 +26,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
-using System.IO;
 using System.IO.Ports;
 
 public abstract class wrmhlThread { // wrmhlThread is the common Thread for receiving and sending data, but it's protocols depend on the derived class you use.
@@ -72,7 +71,6 @@ public abstract class wrmhlThread { // wrmhlThread is the common Thread for rece
 	public void openFlow() { // Open the SerialPort with the vars given by wrmhl.
 		deviceSerial = new SerialPort(this.portName, this.baudRate); // define the SerialPort.
 		deviceSerial.ReadTimeout = this.readTimeout; // set the readTimeout.
-		deviceSerial.DtrEnable = true;
 		deviceSerial.Open(); // Start the data Flow.
 	}
 
@@ -113,16 +111,7 @@ public abstract class wrmhlThread { // wrmhlThread is the common Thread for rece
 		while (threadIsLooping ())
 		{
 			// read data
-			object dataComingFromDevice;
-			try
-			{
-				dataComingFromDevice = ReadProtocol();
-			}
-			catch (System.Exception e)
-			{
-				Debug.Log(e.Message);
-				dataComingFromDevice = null;
-			}
+			object dataComingFromDevice = ReadProtocol();
 			if (dataComingFromDevice != null) {
 				if (inputQueue.Count < QueueLenght)
 				{
